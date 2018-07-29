@@ -6,15 +6,15 @@ module.exports = function(grunt) {
 		// Minify newly created JS Files from previous task
 		js: {
 			files: ['./script/*.js'],
-			tasks: ['jshint:beforeConcat', 'concat:custom', 'uglify:custom']
+			tasks: ['concat:custom', 'uglify:custom']
 		},		
 		
 		// Generate Css file from custom scss files
 		// Minify newly created CSS file
-		scss: {
-			files: ['./scss/*.scss', './scss/*/*.scss'],
-			tasks: ['sass:custom', 'cssmin:custom']
-		}
+		// scss: {
+		// 	files: ['./scss/*.scss', './scss/*/*.scss'],
+		// 	tasks: ['sass:custom', 'cssmin:custom']
+		// }
 		
 	});
 	

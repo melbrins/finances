@@ -109,6 +109,10 @@ function changeType(){
 
 }
 
+// ====================
+// MONTH TO DATE
+// ====================
+
 var mtd = document.getElementById("monthToDate").getContext('2d');
 
 var monthToDate = new Chart(mtd, {
@@ -117,7 +121,6 @@ var monthToDate = new Chart(mtd, {
         labels: days,
         datasets: [{
             label: '£ Spent',
-            data: output,
             backgroundColor: [
                 'rgba(255, 99, 132, 0.2)',
                 'rgba(54, 162, 235, 0.2)',
@@ -149,7 +152,11 @@ var monthToDate = new Chart(mtd, {
         }
     }
 });
-// /block/monthToDate.php
+
+
+// MONTH TO DATE
+// Ajax Call - Update
+// ------------------
 $.ajax({
 
     url: '/block/monthToDate.php',
@@ -166,14 +173,13 @@ $.ajax({
 
 });
 
-$( function() {
+jQuery(document).ready(function($) {
 
     var mtdC = document.getElementById("monthSpentCategory").getContext('2d');
 
-    var myChart = new Chart(mtdC, {
+    var spendingCategory = new Chart(mtdC, {
         type: 'bar',
         data: {
-            labels: ['x','x','x','x','x','x','x','x','x','x'],
             datasets: [{
                 data: [0,0,0,0,0,0,0,0,0,0],
                 backgroundColor: [
@@ -211,64 +217,57 @@ $( function() {
         }
     });
 
-    setSpendingCategory();
+    setCharts();
+
     $(".daterangepicker").daterangepicker();
 
     $( ".datepicker" ).datepicker();
     $( ".datepicker" ).datepicker( "option", "dateFormat", "yy-mm-dd" );
+
+
+    function setCharts (){
+
+        $options = { function2call 	: 'spendingMonthToDate' };
+
+        updateChart(spendingCategory, $options);
+
+    }
+
+
+    function updateChart (chart, options){
+
+        $.ajax({
+
+            url: '/block/updateChart.php',
+
+            data: $options,
+            type: 'post',
+            dataType: "json",
+
+            success: function(output){
+
+                chart.data.labels             = Object.keys(output);
+                chart.data.datasets[0].data   = Object.values(output);
+                chart.update();
+
+            }
+
+        });
+    }
+
     $( "#spendingCategory" ).submit(function(event){
         event.preventDefault();
+
         var rangeDate = JSON.parse($("#rangeDate").val());
-        var startDate = rangeDate['start'];
-        var endDate = rangeDate['end'];
 
-        updateSpendingCategory(startDate, endDate);
+        $options = {
+            function2call 	: 'spendingMonthToDate',
+            start           : rangeDate['start'],
+            end             : rangeDate['end']
+        };
+
+        updateChart(spendingCategory, $options);
     });
-
-    function setSpendingCategory (){
-        $.ajax({
-
-            url: '/block/monthToDateCategory.php',
-
-            data: {
-                function2call 	: 'getEmployeesList'
-            },
-            type: 'post',
-            dataType: "json",
-
-            success: function(output){
-
-                var spendingCategories = output;
-
-                updateSpendingCategory(output);
-            }
-
-        });
-    }
-
-    function updateSpendingCategory (startDate, endDate){
-        $.ajax({
-
-            url: '/block/monthToDateCategory.php',
-
-            data: {
-                function2call 	: 'getEmployeesList',
-                start           : startDate,
-                end             : endDate
-            },
-            type: 'post',
-            dataType: "json",
-
-            success: function(output){
-
-                myChart.data.labels             = Object.keys(output);
-                myChart.data.datasets[0].data   = Object.values(output);
-                myChart.update();
-
-            }
-
-        });
-    }
 
 } );
 /*! jQuery v2.1.3 | (c) 2005, 2014 jQuery Foundation, Inc. | jquery.org/license */
