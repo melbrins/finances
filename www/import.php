@@ -14,13 +14,18 @@
 		$import  		= new import();
 		$transactions 	= $import->csvToArray('import/transactions.csv');
 		$accounts 		= $render->getAllAccounts();
+		$triggers       = $render->getAllTriggers();
+
 
 		foreach( $transactions as $transaction){
-
+            unset($categoryId);
 			// Set up date format for database
 			$date  		= $transaction['Date'];
 			$date_array = explode("/", $date);
 			$date  		= $date_array['2'] . '-' . $date_array['1'] . '-' . $date_array['0'];
+			$name       = $transaction['Memo'];
+			$name_array = explode ('   ', $name);
+			$merchant   = $name_array[0];
 
 			// Set up account id 
 			$transactionAccount 	= $transaction['Account'];
@@ -37,22 +42,29 @@
 				}
 			}
 
+			foreach($triggers as $trigger){
+			    if(strpos($merchant, $trigger['trigger']) !== false){
+			        $categoryId = $trigger['category_id'];
+                }
+            }
+
+            if(!isset($categoryId)){ $categoryId = '1'; }
+
 			$transaction_info = array (
 				'date'  	 	=> $date,
 				'amount'  	 	=> $transaction['Amount'],
-				'name'  	 	=> $transaction['Memo'],
+				'name'  	 	=> $name,
+				'merchant'      => $merchant,
 				'account_id' 	=> $currentAccount,
-				'category_id' 	=> '1'
+				'category_id' 	=> $categoryId
 			);
 
 			$test = $import->checkData($transaction_info);
-			// var_dump($transaction_info);
-			// var_dump($test);
 
 			if($test == false){
-				$import->addTransaction($transaction_info);			 
+				$import->addTransaction($transaction_info);
 			}else{
-				$import->addTransaction($transaction_info);			 
+				$import->addTransaction($transaction_info);
 				var_dump($test['id']);
 			}
 
