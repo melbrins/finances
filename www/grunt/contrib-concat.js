@@ -1,7 +1,13 @@
 module.exports = function(grunt) {
 	
 	grunt.config('concat', {
-		
+
+		browserify: {
+			src: [
+
+			]
+		},
+
 		jquery: {
 			
 			options: {
@@ -25,7 +31,7 @@ module.exports = function(grunt) {
 
 			src: [
 				'node_modules/moment/min/moment.min.js',
-				'node_modules/chart.js/dist/chart.min.js',
+				// 'node_modules/chart.js/dist/chart.min.js',
 				'js/jquery.comiseo.daterangepicker.min.js'
 			],
 
@@ -49,4 +55,5 @@ module.exports = function(grunt) {
 	});
 	
 	grunt.loadNpmTasks('grunt-contrib-concat');
+    grunt.loadNpmTasks('grunt-browserify');
 };

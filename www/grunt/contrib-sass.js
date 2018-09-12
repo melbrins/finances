@@ -1,16 +1,6 @@
 module.exports = function(grunt) {
 	
 	grunt.config('sass', {
-		
-		components: {
-
-			files: {
-				'css/components.css' : [
-					'node_modules/owl.carousel/src/scss/owl.carousel.scss',
-					'node_modules/owl.carousel/src/scss/_theme.scss'
-				]
-			}
-		},
 
 		custom: {
 
@@ -21,7 +11,7 @@ module.exports = function(grunt) {
 			},
 
 			files: {
-				'css/main.css': 'scss/stylesheet.scss'
+				'dest/css/main.css'  : 'scss/stylesheet.scss'
 			}
 		}
 		
