@@ -1,0 +1,296 @@
+@import '../node_modules/reset-css/sass/reset';
+@import 'typography';
+
+// HEADER
+nav{
+  position  : fixed;
+  background-color: #fff;
+  bottom    : 0;
+  width     : 100vw;
+  height    : 60px;
+  z-index   : 9999;
+
+  ul{
+    display           : flex;
+    flex-direction    : row;
+    justify-content   : space-between;
+    align-items       : center;
+
+    li{
+      height  : 60px;
+      width   : 33.33vw;
+      text-align: center;
+
+      a{
+        line-height: 60px;
+      }
+    }
+  }
+}
+
+body {
+  background-color: #2a2a2a;
+
+  .wrapper {
+    padding: 20px;
+  }
+}
+
+section{
+  background-color  : rgba(85,85,85,0.5);
+  padding           : 20px;
+  margin            : 20px auto;
+  border-radius     : 10px;
+  box-shadow        : 0px 5px 5px rgba(0,0,0,0.2);
+  color             : #fff;
+
+  h2{
+    margin-top: 0;
+  }
+
+  .canvas-wrapper {
+    max-height : 60vh;
+
+    canvas {
+      width: 100%;
+    }
+  }
+}
+
+div.overview{
+  display           : flex;
+  flex-direction    : row;
+  align-items       : flex-start;
+  justify-content   : space-between;
+
+  section{
+    position  : relative;
+    width     : 25%;
+    height    : 300px;
+    margin    : 0;
+    box-sizing: border-box;
+
+    &.monthly-average{
+      display         : flex;
+      flex-direction  : column;
+      align-items     : center;
+      justify-content : center;
+      text-align      : center;
+
+      .amount{
+        font-weight   : 400;
+        line-height   : 1.7;
+
+        &.positive-amount{
+          font-size   : 60px;
+        }
+      }
+    }
+  }
+}
+
+@media only screen and (max-width: 768px){
+  body {
+    div.overview {
+      flex-direction  : column;
+
+      section{
+        width           : 100%;
+        margin-bottom   : 20px;
+      }
+    }
+
+  }
+}
+
+$positive : #99CA66;
+$negative: #FF635D;
+.positive-amount{ color: $positive; }
+.negative-amount{ color: $negative; }
+
+ul.categories{
+  display           : flex;
+  flex-direction    : row;
+  align-items       : flex-start;
+  justify-content   : flex-start;
+  flex-wrap         : wrap;
+  width             : 100%;
+  list-style        : none;
+  padding           : 0;
+
+  .category{
+    width       : 12%;
+    border      : 1px solid #000;
+    padding     : 10px;
+    box-sizing  : border-box;
+    margin      : 0 20px 20px 0;
+    text-align  : center;
+  }
+}
+
+// CATEGORIES OVERVIEW
+.categories-overview{
+  h3{
+    color: #fff;
+  }
+
+  ul li{
+    background-color  : rgba(85,85,85,0.5);
+    padding         : 10px;
+    width           : 100%;
+    margin-bottom   : 1px;
+    display         : flex;
+    align-items     : center;
+    justify-content : space-between;
+    flex-direction  : row;
+    box-sizing      : border-box;
+    color           : #fff;
+
+    .category-image,
+    .category-amount{
+      flex-grow: 0;
+    }
+
+    .category-amount{
+      p.amount{
+        font-size: 14px;
+      }
+    }
+
+    .category-image{
+      width   : 40px;
+      height  : 40px;
+      background-color  : #555;
+      border-radius     : 2px;
+      margin-right      : 15px;
+    }
+
+    .category-name{
+      flex-grow     : 2;
+      text-align    : left;
+      color         : #fff;
+
+      p{
+        font-size: 12px;
+      }
+
+      span.category{
+        font-size: 8px;
+      }
+    }
+  }
+}
+
+// TRANSACTION TABLE
+#transaction_table{
+  width         : 100vw;
+  margin-left   : -20px;
+
+  .day-title{
+    padding   : 15px 10px;
+    margin-top: 20px;
+
+    p{
+      font-size : 12px;
+      color     : #999;
+    }
+  }
+
+  ul li{
+    a {
+      background-color  : rgba(85, 85, 85, 0.5);
+      padding           : 10px;
+      width             : 100%;
+      margin-bottom     : 1px;
+      display           : flex;
+      align-items       : center;
+      justify-content   : space-between;
+      flex-direction    : row;
+      box-sizing        : border-box;
+      text-decoration   : none;
+      color             : #fff;
+
+      &.credit {
+        .transaction-amount {
+          p {
+            color: $positive;
+          }
+        }
+      }
+
+      &.debit {
+        .transaction-amount {
+          p {
+            color: $negative;
+          }
+        }
+      }
+
+      .transaction-image,
+      .transaction-amount {
+        flex-grow: 0;
+      }
+
+      .transaction-amount {
+        p.amount {
+          font-size: 14px;
+        }
+      }
+
+      .transaction-image {
+        width: 40px;
+        height: 40px;
+        background-color: #555;
+        border-radius: 2px;
+        margin-right: 15px;
+      }
+
+      .transaction-name {
+        flex-grow: 2;
+        text-align: left;
+        color: #fff;
+
+        p {
+          font-size: 12px;
+        }
+
+        span.category {
+          font-size: 8px;
+        }
+      }
+    }
+  }
+
+  thead{
+    border-bottom: 1px solid #1a1a1a;
+
+    tr {
+      th {
+        text-align  : left;
+        height      : 40px;
+        line-height : 40px;
+        padding     : 0 10px;
+        font-size   : 14px;
+        font-weight : bold;
+
+        &.col-day,
+        &.col-amount,
+        &.col-account{
+          width: 10%;
+          min-width: 100px;
+        }
+      }
+    }
+  }
+
+  tbody{
+    tr{
+
+      td{
+        padding     : 15px 10px;
+        font-size   : 14px;
+        margin-bottom: 1px;
+      }
+    }
+  }
+}

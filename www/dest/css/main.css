@@ -1,0 +1,384 @@
+/* http://meyerweb.com/eric/tools/css/reset/
+   v4.0 | 20180602
+   License: none (public domain)
+*/
+/* line 6, ../../node_modules/reset-css/sass/_reset.scss */
+html, body, div, span, applet, object, iframe,
+h1, h2, h3, h4, h5, h6, p, blockquote, pre,
+a, abbr, acronym, address, big, cite, code,
+del, dfn, em, img, ins, kbd, q, s, samp,
+small, strike, strong, sub, sup, tt, var,
+b, u, i, center,
+dl, dt, dd, ol, ul, li,
+fieldset, form, label, legend,
+table, caption, tbody, tfoot, thead, tr, th, td,
+article, aside, canvas, details, embed,
+figure, figcaption, footer, header, hgroup,
+main, menu, nav, output, ruby, section, summary,
+time, mark, audio, video {
+  margin: 0;
+  padding: 0;
+  border: 0;
+  font-size: 100%;
+  font: inherit;
+  vertical-align: baseline;
+}
+
+/* HTML5 display-role reset for older browsers */
+/* line 27, ../../node_modules/reset-css/sass/_reset.scss */
+article, aside, details, figcaption, figure,
+footer, header, hgroup, main, menu, nav, section {
+  display: block;
+}
+
+/* HTML5 hidden-attribute fix for newer browsers */
+/* line 32, ../../node_modules/reset-css/sass/_reset.scss */
+*[hidden] {
+  display: none;
+}
+
+/* line 35, ../../node_modules/reset-css/sass/_reset.scss */
+body {
+  line-height: 1;
+}
+
+/* line 38, ../../node_modules/reset-css/sass/_reset.scss */
+ol, ul {
+  list-style: none;
+}
+
+/* line 41, ../../node_modules/reset-css/sass/_reset.scss */
+blockquote, q {
+  quotes: none;
+}
+
+/* line 44, ../../node_modules/reset-css/sass/_reset.scss */
+blockquote:before, blockquote:after,
+q:before, q:after {
+  content: '';
+  content: none;
+}
+
+/* line 49, ../../node_modules/reset-css/sass/_reset.scss */
+table {
+  border-collapse: collapse;
+  border-spacing: 0;
+}
+
+/* line 5, ../../scss/typography.scss */
+h1, h2, h3, h4, p, a, span {
+  font-family: "Nunito", Helvetica, sans-serif;
+  line-height: 1.4;
+}
+
+/* line 10, ../../scss/typography.scss */
+h1 {
+  font-size: 36px;
+  font-weight: 600;
+  margin-bottom: 30px;
+  color: #3D5170;
+}
+
+/* line 17, ../../scss/typography.scss */
+h2 {
+  font-size: 24px;
+  font-weight: 200;
+  margin-top: 30px;
+  margin-bottom: 15px;
+}
+
+/* line 24, ../../scss/typography.scss */
+h3 {
+  font-size: 18px;
+  font-weight: 800;
+  margin-top: 20px;
+  margin-bottom: 10px;
+}
+
+/* line 31, ../../scss/typography.scss */
+h4 {
+  font-size: 16px;
+  font-weight: 200;
+}
+/* line 35, ../../scss/typography.scss */
+h4.top-subtitle {
+  margin-bottom: -10px;
+  color: #3D5170;
+}
+
+/* line 5, ../../scss/stylesheet.scss */
+nav {
+  position: fixed;
+  background-color: #fff;
+  bottom: 0;
+  width: 100vw;
+  height: 60px;
+  z-index: 9999;
+}
+/* line 13, ../../scss/stylesheet.scss */
+nav ul {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+}
+/* line 19, ../../scss/stylesheet.scss */
+nav ul li {
+  height: 60px;
+  width: 33.33vw;
+  text-align: center;
+}
+/* line 24, ../../scss/stylesheet.scss */
+nav ul li a {
+  line-height: 60px;
+}
+
+/* line 31, ../../scss/stylesheet.scss */
+body {
+  background-color: #2a2a2a;
+}
+/* line 34, ../../scss/stylesheet.scss */
+body .wrapper {
+  padding: 20px;
+}
+
+/* line 39, ../../scss/stylesheet.scss */
+section {
+  background-color: rgba(85, 85, 85, 0.5);
+  padding: 20px;
+  margin: 20px auto;
+  border-radius: 10px;
+  box-shadow: 0px 5px 5px rgba(0, 0, 0, 0.2);
+  color: #fff;
+}
+/* line 47, ../../scss/stylesheet.scss */
+section h2 {
+  margin-top: 0;
+}
+/* line 51, ../../scss/stylesheet.scss */
+section .canvas-wrapper {
+  max-height: 60vh;
+}
+/* line 54, ../../scss/stylesheet.scss */
+section .canvas-wrapper canvas {
+  width: 100%;
+}
+
+/* line 60, ../../scss/stylesheet.scss */
+div.overview {
+  display: flex;
+  flex-direction: row;
+  align-items: flex-start;
+  justify-content: space-between;
+}
+/* line 66, ../../scss/stylesheet.scss */
+div.overview section {
+  position: relative;
+  width: 25%;
+  height: 300px;
+  margin: 0;
+  box-sizing: border-box;
+}
+/* line 73, ../../scss/stylesheet.scss */
+div.overview section.monthly-average {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+}
+/* line 80, ../../scss/stylesheet.scss */
+div.overview section.monthly-average .amount {
+  font-weight: 400;
+  line-height: 1.7;
+}
+/* line 84, ../../scss/stylesheet.scss */
+div.overview section.monthly-average .amount.positive-amount {
+  font-size: 60px;
+}
+
+@media only screen and (max-width: 768px) {
+  /* line 94, ../../scss/stylesheet.scss */
+  body div.overview {
+    flex-direction: column;
+  }
+  /* line 97, ../../scss/stylesheet.scss */
+  body div.overview section {
+    width: 100%;
+    margin-bottom: 20px;
+  }
+}
+/* line 108, ../../scss/stylesheet.scss */
+.positive-amount {
+  color: #99CA66;
+}
+
+/* line 109, ../../scss/stylesheet.scss */
+.negative-amount {
+  color: #FF635D;
+}
+
+/* line 111, ../../scss/stylesheet.scss */
+ul.categories {
+  display: flex;
+  flex-direction: row;
+  align-items: flex-start;
+  justify-content: flex-start;
+  flex-wrap: wrap;
+  width: 100%;
+  list-style: none;
+  padding: 0;
+}
+/* line 121, ../../scss/stylesheet.scss */
+ul.categories .category {
+  width: 12%;
+  border: 1px solid #000;
+  padding: 10px;
+  box-sizing: border-box;
+  margin: 0 20px 20px 0;
+  text-align: center;
+}
+
+/* line 133, ../../scss/stylesheet.scss */
+.categories-overview h3 {
+  color: #fff;
+}
+/* line 137, ../../scss/stylesheet.scss */
+.categories-overview ul li {
+  background-color: rgba(85, 85, 85, 0.5);
+  padding: 10px;
+  width: 100%;
+  margin-bottom: 1px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-direction: row;
+  box-sizing: border-box;
+  color: #fff;
+}
+/* line 149, ../../scss/stylesheet.scss */
+.categories-overview ul li .category-image,
+.categories-overview ul li .category-amount {
+  flex-grow: 0;
+}
+/* line 155, ../../scss/stylesheet.scss */
+.categories-overview ul li .category-amount p.amount {
+  font-size: 14px;
+}
+/* line 160, ../../scss/stylesheet.scss */
+.categories-overview ul li .category-image {
+  width: 40px;
+  height: 40px;
+  background-color: #555;
+  border-radius: 2px;
+  margin-right: 15px;
+}
+/* line 168, ../../scss/stylesheet.scss */
+.categories-overview ul li .category-name {
+  flex-grow: 2;
+  text-align: left;
+  color: #fff;
+}
+/* line 173, ../../scss/stylesheet.scss */
+.categories-overview ul li .category-name p {
+  font-size: 12px;
+}
+/* line 177, ../../scss/stylesheet.scss */
+.categories-overview ul li .category-name span.category {
+  font-size: 8px;
+}
+
+/* line 185, ../../scss/stylesheet.scss */
+#transaction_table {
+  width: 100vw;
+  margin-left: -20px;
+}
+/* line 189, ../../scss/stylesheet.scss */
+#transaction_table .day-title {
+  padding: 15px 10px;
+  margin-top: 20px;
+}
+/* line 193, ../../scss/stylesheet.scss */
+#transaction_table .day-title p {
+  font-size: 12px;
+  color: #999;
+}
+/* line 200, ../../scss/stylesheet.scss */
+#transaction_table ul li a {
+  background-color: rgba(85, 85, 85, 0.5);
+  padding: 10px;
+  width: 100%;
+  margin-bottom: 1px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-direction: row;
+  box-sizing: border-box;
+  text-decoration: none;
+  color: #fff;
+}
+/* line 215, ../../scss/stylesheet.scss */
+#transaction_table ul li a.credit .transaction-amount p {
+  color: #99CA66;
+}
+/* line 223, ../../scss/stylesheet.scss */
+#transaction_table ul li a.debit .transaction-amount p {
+  color: #FF635D;
+}
+/* line 229, ../../scss/stylesheet.scss */
+#transaction_table ul li a .transaction-image,
+#transaction_table ul li a .transaction-amount {
+  flex-grow: 0;
+}
+/* line 235, ../../scss/stylesheet.scss */
+#transaction_table ul li a .transaction-amount p.amount {
+  font-size: 14px;
+}
+/* line 240, ../../scss/stylesheet.scss */
+#transaction_table ul li a .transaction-image {
+  width: 40px;
+  height: 40px;
+  background-color: #555;
+  border-radius: 2px;
+  margin-right: 15px;
+}
+/* line 248, ../../scss/stylesheet.scss */
+#transaction_table ul li a .transaction-name {
+  flex-grow: 2;
+  text-align: left;
+  color: #fff;
+}
+/* line 253, ../../scss/stylesheet.scss */
+#transaction_table ul li a .transaction-name p {
+  font-size: 12px;
+}
+/* line 257, ../../scss/stylesheet.scss */
+#transaction_table ul li a .transaction-name span.category {
+  font-size: 8px;
+}
+/* line 264, ../../scss/stylesheet.scss */
+#transaction_table thead {
+  border-bottom: 1px solid #1a1a1a;
+}
+/* line 268, ../../scss/stylesheet.scss */
+#transaction_table thead tr th {
+  text-align: left;
+  height: 40px;
+  line-height: 40px;
+  padding: 0 10px;
+  font-size: 14px;
+  font-weight: bold;
+}
+/* line 276, ../../scss/stylesheet.scss */
+#transaction_table thead tr th.col-day, #transaction_table thead tr th.col-amount, #transaction_table thead tr th.col-account {
+  width: 10%;
+  min-width: 100px;
+}
+/* line 289, ../../scss/stylesheet.scss */
+#transaction_table tbody tr td {
+  padding: 15px 10px;
+  font-size: 14px;
+  margin-bottom: 1px;
+}
+
+/*# sourceMappingURL=main.css.map */
