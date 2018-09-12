@@ -1,10 +1,12 @@
-<?php include 'block/bddConnexion.php'; ?>
+<?php
+    include 'block/bddConnexion.php';
+    setlocale(LC_MONETARY, 'en_GB');
+?>
 
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+<link href="https://fonts.googleapis.com/css?family=Nunito:200,400,700,900" rel="stylesheet">
 <link rel="stylesheet" type="text/css" href="/dest/css/jquery-ui.min.css">
 <link rel="stylesheet" type="text/css" href="/dest/css/jquery.comiseo.daterangepicker.css">
+<link rel="stylesheet" type="text/css" href="/dest/css/main.css">
 
-
-<script type="text/javascript" src="/dest/js/jquery.min.js"></script>
-<!--<script type="text/javascript" src="/dest/js/jquery-ui.min.js"></script>-->
-<!--<script type="text/javascript" src="/dest/js/jquery.comiseo.daterangepicker.min.js"></script>-->
-<script type="text/javascript" src="/dest/js/addons.min.js"></script>
