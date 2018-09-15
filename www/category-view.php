@@ -14,6 +14,7 @@
 		$render  	= new render();
 
 		$categoryId         = $_GET['category'];
+		$categoryName       = $render->getCategoryName($categoryId );
         $jsonCategory       = $render->yearSpendingPerMonthPerCategory('1', $categoryId ,'2018');
 		$reponse            = $render->getTransactionPerCategory('1', $categoryId,'2018-01-01', '2018-12-31');
         $categoryTrigger    = $render->getTriggerPerCategory($categoryId);
@@ -25,7 +26,8 @@
 
 	?>
 
-    <h2> YEAR SPENDING PER MONTH </h2>
+    <h1><?php echo $categoryName; ?></h1>
+    <h3> YEAR SPENDING PER MONTH </h3>
 
     <section class="canvas">
         <canvas id="categorySpending" width="1200" height="400"></canvas>

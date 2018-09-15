@@ -71,6 +71,12 @@
 			return $categories_Array;
 		}
 
+		function getCategoryName($categoryId){
+		    $query = $this->getPdo()->query("SELECT name FROM Category WHERE id = '$categoryId' ");
+            $categoryName = $query->fetch();
+		    return $categoryName[0];
+        }
+
 
         function getAllTriggers() {
             $query = $this->getPdo()->query('SELECT * FROM _trigger');
