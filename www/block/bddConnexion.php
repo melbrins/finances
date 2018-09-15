@@ -341,7 +341,7 @@
             foreach( $months as $key => $value){
 
                 $spent = $this->getMonthSpendingPerCategory($account, $category, $key, $year);
-                $yearSpending[] = $spent;
+                $yearSpending[$value] = $spent;
 
             }
 

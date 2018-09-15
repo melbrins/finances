@@ -33519,6 +33519,32 @@ var Chart   = require('chart.js'),
     drp     = require('daterangepicker');
     Odometer = require('odometer');
 
+
+// VARIABLES
+var $defaultOptions = {
+    responsive: true,
+    maintainAspectRatio: false,
+    scaleShowVerticalLines: false,
+    drawBorder: false,
+
+    elements: {
+        line: {
+            tension: 0
+        }
+
+    },
+
+    scales: {
+        yAxes: [{
+            ticks: {
+                beginAtZero:false
+            }
+        }],
+        xAxes: [{
+            display: false
+        }]
+    }
+};
 var days = [
     '1',
     '2',
@@ -33552,7 +33578,6 @@ var days = [
     '30',
     '31'
 ];
-
 var months = [
     'January',
     'February',
@@ -33568,125 +33593,7 @@ var months = [
     'December'
 ];
 
-var ctx = document.getElementById("myChart").getContext('2d');
-
-var iVsS = document.getElementById("incomeVsSpending").getContext('2d');
-// /block/yearSpendingPerMonth.php
-
-var $defaultOptions = {
-    responsive: true,
-    maintainAspectRatio: false,
-    scaleShowVerticalLines: false,
-    drawBorder: false,
-
-    elements: {
-        line: {
-            tension: 0
-        }
-
-    },
-
-    scales: {
-        yAxes: [{
-            ticks: {
-                beginAtZero:false
-            }
-        }],
-        xAxes: [{
-            display: false
-        }]
-    }
-};
-
-$.ajax({
-
-    url: '/block/updateChart.php',
-
-    data: {
-        function2call 	: 'yearOnYear',
-        year 			: '2018',
-        type            : 'debit'
-    },
-    type: 'post',
-    dataType: "json",
-
-    success: function(output){
-
-        console.log(output);
-
-        var myChart = new Chart(ctx, {
-            type: 'line',
-            data: {
-                labels: months,
-                datasets: [{
-                    label: 'Current Year',
-                    borderColor: '#000',
-                    fill: '-1',
-                    data: output.currentYear
-                },
-                {
-                    label: 'Previous Year',
-                    borderColor: '#af0000',
-                    fill: '-1',
-                    data: output.previousYear
-                }]
-            },
-            options: $defaultOptions
-        });
-
-    }
-
-});
-
-$.ajax({
-
-    url: '/block/updateChart.php',
-
-    data: {
-        function2call 	: 'incomeVsSpending',
-        year 			: '2018'
-    },
-    type: 'post',
-    dataType: "json",
-
-    success: function(output){
-
-        console.log(output);
-
-        var incomeVsSpending = new Chart(iVsS, {
-            type: 'line',
-            data: {
-                labels: months,
-                datasets: [{
-                    label: 'Income',
-                    borderColor: '#000',
-                    fill: '-1',
-                    data: output.income
-                },
-                    {
-                        label: 'Spending',
-                        borderColor: '#af0000',
-                        fill: '-1',
-                        data: output.spending
-                    }]
-            },
-            options: $defaultOptions
-        });
-
-    }
-
-});
-
-
 $(document).ready(function($) {
-
-    var mtdC = document.getElementById("monthSpentCategory").getContext('2d');
-
-    // ====================
-    // MONTH TO DATE
-    // ====================
-
-    var mtd = document.getElementById("monthToDate").getContext('2d');
 
     var monthToDate;
 
@@ -33704,118 +33611,141 @@ $(document).ready(function($) {
         }]
     };
 
-    monthToDate = new Chart(mtd, {
-        type: 'line',
-        data: mtdData,
-        options: mtdOptions
-    });
+    if(document.getElementById("myChart")){
+        var ctx = document.getElementById("myChart").getContext('2d');
 
-    // ====================
-    // MONTH TO DATE
-    // Small block - Test
-    // ====================
-    var mtd2 = document.getElementById("monthToDate2").getContext('2d');
+        $.ajax({
 
-    var mtd2Options = {
-        responsive:false,
-        maintainAspectRatio: false,
-        tension: 0,
-        scales: {
-            yAxes: [{
-                display: false,
-                ticks: {
-                    beginAtZero:false
-                }
-            }],
-            xAxes: [{
-                display: false
-            }]
-        }
-    };
+            url: '/block/updateChart.php',
 
-    var monthToDate2 = new Chart(mtd2, {
-        type: 'line',
-        data: mtdData,
-        options: mtd2Options
-    });
+            data: {
+                function2call 	: 'yearOnYear',
+                year 			: '2018',
+                type            : 'debit'
+            },
+            type: 'post',
+            dataType: "json",
+
+            success: function(output){
+
+                console.log(output);
+
+                var myChart = new Chart(ctx, {
+                    type: 'line',
+                    data: {
+                        labels: months,
+                        datasets: [{
+                            label: 'Current Year',
+                            borderColor: '#000',
+                            fill: '-1',
+                            data: output.currentYear
+                        },
+                            {
+                                label: 'Previous Year',
+                                borderColor: '#af0000',
+                                fill: '-1',
+                                data: output.previousYear
+                            }]
+                    },
+                    options: $defaultOptions
+                });
+
+            }
+
+        });
+    }
+
+    if(document.getElementById("incomeVsSpending")){
+        var iVsS = document.getElementById("incomeVsSpending").getContext('2d');
+
+        $.ajax({
+
+            url: '/block/updateChart.php',
+
+            data: {
+                function2call 	: 'incomeVsSpending',
+                year 			: '2018'
+            },
+            type: 'post',
+            dataType: "json",
+
+            success: function(output){
+
+                console.log(output);
+
+                var incomeVsSpending = new Chart(iVsS, {
+                    type: 'line',
+                    data: {
+                        labels: months,
+                        datasets: [{
+                            label: 'Income',
+                            borderColor: '#000',
+                            fill: '-1',
+                            data: output.income
+                        },
+                            {
+                                label: 'Spending',
+                                borderColor: '#af0000',
+                                fill: '-1',
+                                data: output.spending
+                            }]
+                    },
+                    options: $defaultOptions
+                });
+
+            }
+
+        });
+    }
 
 
     // ====================
     // SPENDING CATEGORY
     // ====================
-    var spendingCategory = new Chart(mtdC, {
-        type: 'horizontalBar',
-        data: {
-            datasets: [{
-                data: [0,0,0,0,0,0,0,0,0,0],
-                backgroundColor: [
-                    'rgba(255, 99, 132, 0.2)',
-                    'rgba(54, 162, 235, 0.2)',
-                    'rgba(255, 206, 86, 0.2)',
-                    'rgba(75, 192, 192, 0.2)',
-                    'rgba(153, 102, 255, 0.2)',
-                    'rgba(255, 99, 132, 0.2)',
-                    'rgba(54, 162, 235, 0.2)',
-                    'rgba(255, 206, 86, 0.2)',
-                    'rgba(75, 192, 192, 0.2)',
-                    'rgba(153, 102, 255, 0.2)',
-                    'rgba(255, 159, 64, 0.2)'
-                ],
-                borderColor: [
-                    'rgba(255,99,132,1)',
-                    'rgba(54, 162, 235, 1)',
-                    'rgba(255, 206, 86, 1)',
-                    'rgba(75, 192, 192, 1)',
-                    'rgba(153, 102, 255, 1)',
-                    'rgba(255,99,132,1)',
-                    'rgba(54, 162, 235, 1)',
-                    'rgba(255, 206, 86, 1)',
-                    'rgba(75, 192, 192, 1)',
-                    'rgba(153, 102, 255, 1)',
-                    'rgba(255, 159, 64, 1)'
-                ],
-                borderWidth: 1,
-                pointRadius: 2
-            }]
-        },
-        options: {
-            responsive:false,
-            maintainAspectRatio: false
-        }
-    });
 
-    setCharts();
+    if(document.getElementById("monthSpentCategory")) {
+        var mtdC = document.getElementById("monthSpentCategory").getContext('2d');
 
-
-    function setCharts (){
-
-
-        // MONTH TO DATE
-        // Ajax Call - Update
-        // ------------------
-        $options = { function2call 	: 'spendingMonthToDate' };
-
-
-        $('#MonthtoDate').submit(function(event){
-            event.preventDefault();
-
-            monthToDate.destroy();
-
-            monthToDate = new Chart(mtd, {
-                type    : $('#mtd-type').val(),
-                data    : mtdData,
-                options : mtdOptions
-            });
-
+        var spendingCategory = new Chart(mtdC, {
+            type: 'horizontalBar',
+            data: {
+                datasets: [{
+                    data: [0,0,0,0,0,0,0,0,0,0],
+                    backgroundColor: [
+                        'rgba(255, 99, 132, 0.2)',
+                        'rgba(54, 162, 235, 0.2)',
+                        'rgba(255, 206, 86, 0.2)',
+                        'rgba(75, 192, 192, 0.2)',
+                        'rgba(153, 102, 255, 0.2)',
+                        'rgba(255, 99, 132, 0.2)',
+                        'rgba(54, 162, 235, 0.2)',
+                        'rgba(255, 206, 86, 0.2)',
+                        'rgba(75, 192, 192, 0.2)',
+                        'rgba(153, 102, 255, 0.2)',
+                        'rgba(255, 159, 64, 0.2)'
+                    ],
+                    borderColor: [
+                        'rgba(255,99,132,1)',
+                        'rgba(54, 162, 235, 1)',
+                        'rgba(255, 206, 86, 1)',
+                        'rgba(75, 192, 192, 1)',
+                        'rgba(153, 102, 255, 1)',
+                        'rgba(255,99,132,1)',
+                        'rgba(54, 162, 235, 1)',
+                        'rgba(255, 206, 86, 1)',
+                        'rgba(75, 192, 192, 1)',
+                        'rgba(153, 102, 255, 1)',
+                        'rgba(255, 159, 64, 1)'
+                    ],
+                    borderWidth: 1,
+                    pointRadius: 2
+                }]
+            },
+            options: {
+                responsive:false,
+                maintainAspectRatio: false
+            }
         });
-
-
-        updateChart(monthToDate, $options);
-
-        // MONTH TO DATE
-        // Small block - test
-        updateChart(monthToDate2, $options);
-
 
         // MONTH TO DATE CATEGORIES
         // ------------------
@@ -33838,7 +33768,111 @@ $(document).ready(function($) {
 
             updateChart(spendingCategory, $options);
         });
+    }
 
+    // ====================
+    // MONTH TO DATE
+    // ====================
+    if(document.getElementById("monthToDate")) {
+        var mtd = document.getElementById("monthToDate").getContext('2d');
+
+        monthToDate = new Chart(mtd, {
+            type: 'line',
+            data: mtdData,
+            options: mtdOptions
+        });
+
+        // MONTH TO DATE
+        // Ajax Call - Update
+        // ------------------
+        $options = { function2call 	: 'spendingMonthToDate' };
+
+
+        $('#MonthtoDate').submit(function(event){
+            event.preventDefault();
+
+            monthToDate.destroy();
+
+            monthToDate = new Chart(mtd, {
+                type    : $('#mtd-type').val(),
+                data    : mtdData,
+                options : mtdOptions
+            });
+
+        });
+
+        updateChart(monthToDate, $options);
+    }
+
+    // ====================
+    // MONTH TO DATE
+    // Small block - Test
+    // ====================
+    if(document.getElementById("monthToDate2")) {
+        var mtd2 = document.getElementById("monthToDate2").getContext('2d');
+
+        var mtd2Options = {
+            responsive:false,
+            maintainAspectRatio: false,
+            tension: 0,
+            scales: {
+                yAxes: [{
+                    display: false,
+                    ticks: {
+                        beginAtZero:false
+                    }
+                }],
+                xAxes: [{
+                    display: false
+                }]
+            }
+        };
+
+        var monthToDate2 = new Chart(mtd2, {
+            type: 'line',
+            data: mtdData,
+            options: mtd2Options
+        });
+
+        // MONTH TO DATE
+        // Small block - test
+        updateChart(monthToDate2, $options);
+    }
+
+    if(document.getElementById("categorySpending")){
+        var cty = document.getElementById("categorySpending").getContext('2d');
+
+        var categorySpending = new Chart(cty, {
+            type: 'bar',
+            data: {
+                labels: months,
+                datasets: [{
+                    label: '£ Spent',
+                    data: [0,0,0,0,0,0,0],
+                    backgroundColor: 'rgba(85, 85, 85, 0.5)'
+                }]
+            },
+            options: {
+                responsive: false,
+                maintainAspectRatio: false,
+                scales: {
+                    yAxes: [{
+                        ticks: {
+                            beginAtZero: false
+                        }
+                    }]
+                }
+            }
+        });
+
+        if(categoryJson){
+
+            categorySpending.data.labels             = Object.keys(categoryJson);
+            categorySpending.data.datasets[0].data   = Object.values(categoryJson);
+            categorySpending.update();
+
+            console.log('yeah');
+        }
     }
 
     function updateType(graph, chartLabel, chartType, chartData, chartOptions){

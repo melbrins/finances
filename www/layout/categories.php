@@ -22,7 +22,7 @@
 
                     <div class="category-name">
                         <p><?php echo $category['name']; ?></p>
-                        <p><?php echo $category['id']; ?></p>down
+                        <p><?php echo $category['id']; ?></p>
                     </div>
 
                     <div class="category-amount">
