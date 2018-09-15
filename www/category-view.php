@@ -3,7 +3,7 @@
 <head>
 
 	<?php include 'layout/head.php'; ?>
-    <?php include 'layout/after-body.php'; ?>
+
 </head>
 
 <body>
@@ -50,6 +50,7 @@
     </div>
 </body>
 
+<?php include 'layout/after-body.php'; ?>
 
 
 
