@@ -55,21 +55,6 @@
 
 <script>
     categoryJson = <?php print($jsonCategory); ?>;
-
-    console.log('<?php echo $categoryId; ?>');
-
 </script>
-<!--<script>-->
-<!--    require(['jquery'], function ($) {-->
-<!--        var categorySpendingOptions = {-->
-<!--            function2call: 'yearSpendingPerMonthPerCategory',-->
-<!--            year: '2018',-->
-<!--            category: --><?php //echo $categoryId; ?>
-//        };
-//
-//        updateChart(categorySpending, categorySpendingOptions);
-//    });
-//
-//</script>
 
 </html>
