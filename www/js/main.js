@@ -33519,8 +33519,9 @@ var Chart   = require('chart.js'),
     drp     = require('daterangepicker');
     Odometer = require('odometer');
 
-
+// ====================
 // VARIABLES
+// ====================
 var $defaultOptions = {
     responsive: true,
     maintainAspectRatio: false,
@@ -33702,7 +33703,6 @@ $(document).ready(function($) {
     // ====================
     // SPENDING CATEGORY
     // ====================
-
     if(document.getElementById("monthSpentCategory")) {
         var mtdC = document.getElementById("monthSpentCategory").getContext('2d');
 
@@ -33770,6 +33770,9 @@ $(document).ready(function($) {
         });
     }
 
+
+
+
     // ====================
     // MONTH TO DATE
     // ====================
@@ -33803,6 +33806,7 @@ $(document).ready(function($) {
 
         updateChart(monthToDate, $options);
     }
+
 
     // ====================
     // MONTH TO DATE
@@ -33839,6 +33843,10 @@ $(document).ready(function($) {
         updateChart(monthToDate2, $options);
     }
 
+
+    // ====================
+    // CATEGORY VIEW
+    // ====================
     if(document.getElementById("categorySpending")){
         var cty = document.getElementById("categorySpending").getContext('2d');
 
@@ -33866,15 +33874,17 @@ $(document).ready(function($) {
         });
 
         if(categoryJson){
-
             categorySpending.data.labels             = Object.keys(categoryJson);
             categorySpending.data.datasets[0].data   = Object.values(categoryJson);
             categorySpending.update();
-
-            console.log('yeah');
         }
     }
 
+
+
+    // ====================
+    // FUNCTIONS
+    // ====================
     function updateType(graph, chartLabel, chartType, chartData, chartOptions){
 
         alert(graph);
@@ -33908,6 +33918,38 @@ $(document).ready(function($) {
 
         });
     }
+
+    function applyCategory(transactionId, categoryId){
+
+        console.log('applyCategory');
+
+        $.ajax({
+
+            url: '/block/updateChart.php',
+
+            data: {
+                function2call   : 'updateCategory',
+                transaction     : transactionId,
+                category        : categoryId
+            },
+            type: 'post',
+
+            success: function(output){
+                console.log(output)
+            }
+
+        });
+
+    }
+
+    $( "#transaction-category" ).submit(function(event){
+        event.preventDefault();
+
+        categoryId      = $('.categories').val();
+        transactionId   = $('.transactionId').val();
+
+        applyCategory(transactionId, categoryId);
+    });
 
 } );
 },{"chart.js":1,"daterangepicker":58,"jquery":63,"odometer":66,"react":72}]},{},[73]);

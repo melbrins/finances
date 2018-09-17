@@ -77,6 +77,19 @@
 		    return $categoryName[0];
         }
 
+        function updateCategory($transactionId, $category){
+
+            $set = $this->getPdo()->prepare("UPDATE Transaction SET category_id = :category WHERE id = :id ");
+
+            $set->execute(array(
+                'category'  => $category,
+                'id'        => $transactionId
+            ));
+
+            return 'success';
+
+        }
+
 
         function getAllTriggers() {
             $query = $this->getPdo()->query('SELECT * FROM _trigger');
@@ -334,10 +347,10 @@
                 '2'  => 'February',
                 '3'  => 'March',
                 '4'  => 'April',
-                '5'  => 'March',
-                '6'  => 'May',
-                '7'  => 'June',
-                '8'  => 'July',
+                '5'  => 'May',
+                '6'  => 'June',
+                '7'  => 'July',
+                '8'  => 'August',
                 '9'  => 'September',
                 '10' => 'October',
                 '11' => 'November',
@@ -421,6 +434,19 @@
             ));
 
             return $query->fetch();
+        }
+
+        function similarTransactions($account, $start, $end, $trigger){
+            $query = $this->getPdo()->prepare("SELECT * FROM Transaction WHERE name LIKE :trigger AND account_id = :account AND day BETWEEN :start AND :end");
+
+            $query->execute(array(
+                'account' 	=> $account,
+                'start'    	=> $start,
+                'end'       => $end,
+                'trigger'   => '%'. $trigger .'%'
+            ));
+
+            return $query;
         }
 
         function spendingMonthToDateCategory ($account, $startDate, $endDate){
