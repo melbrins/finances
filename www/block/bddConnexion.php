@@ -25,6 +25,7 @@
 	}	
 	
 	class render extends BDD{
+
 		function getAllTransactions() {
 			
 			$transactions = $this->getPdo()->query('SELECT * FROM Transaction');
@@ -54,7 +55,13 @@
 
 
 			return $accounts_Array;
-		}	
+		}
+
+        function getAccountName($accountId){
+            $query = $this->getPdo()->query("SELECT name FROM Account WHERE id = '$accountId' ");
+            $accountName = $query->fetch();
+            return $accountName[0];
+        }
 
 		function getAllCategories() {
 			$query = $this->getPdo()->query('SELECT * FROM Category');
@@ -75,6 +82,25 @@
 		    $query = $this->getPdo()->query("SELECT name FROM Category WHERE id = '$categoryId' ");
             $categoryName = $query->fetch();
 		    return $categoryName[0];
+        }
+
+        function getMonthName($monthNumber){
+            $months = array(
+                '01'  => 'January',
+                '02'  => 'February',
+                '03'  => 'March',
+                '04'  => 'April',
+                '05'  => 'May',
+                '06'  => 'June',
+                '07'  => 'July',
+                '08'  => 'August',
+                '09'  => 'September',
+                '10' => 'October',
+                '11' => 'November',
+                '12' => 'December'
+            );
+
+            return $months[$monthNumber];
         }
 
         function updateCategory($transactionId, $category){
@@ -170,6 +196,47 @@
             if( $transactions != null){
 
                 return $transactions;
+
+            }else{
+
+                return 'No transactions';
+
+            }
+        }
+
+        function jSonCategory($account, $category, $startDate, $endDate){
+
+            $transactions = $this->getTransactionPerCategory($account, $category, $startDate, $endDate);
+
+            if( $transactions != 'No transactions'){
+
+                while( $transaction = $transactions->fetch()) {
+
+                    $category       = $this->getCategoryName($transaction['category_id']);
+                    $account        = $this->getAccountName($transaction['account_id']);
+                    $date_split     = explode('-', $transaction['day']);
+
+                    $date = array(
+                        'year'  => $date_split[0],
+                        'month' => $this->getMonthName($date_split[1]),
+                        'day'   => $date_split[2]
+                    );
+
+                    $spending[$date['year']][$date['month']][$date['day']][]= array(
+                        'id'            => $transaction['id'],
+                        'day'           => $transaction['day'],
+                        'amount'        => $transaction['amount'],
+                        'name'          => $transaction['name'],
+                        'category_id'   => $transaction['category_id'],
+                        'category_name' => $category,
+                        'account_id'    => $transaction['account_id'],
+                        'account_name'  => $account,
+                        'merchant'      => $transaction['merchant']
+                    );
+
+                }
+
+                return json_encode($spending);
 
             }else{
 
