@@ -2,6 +2,8 @@
 <html lang="en">
 <head>
 
+    <title>Dashboard</title>
+
 	<?php include 'layout/head.php'; ?>
 
 </head>
@@ -285,104 +287,6 @@
     <!--                    </td>-->
 
 </body>
-
-<script type="text/babel">
-
-    class YearOnYear extends React.Component{
-        constructor(props){
-            super(props);
-            this.state = {
-                data : {
-                    labels: months,
-                    datasets: [{
-                        label: 'Current Year',
-                        borderColor: '#000',
-                        fill: '-1',
-                        data: YoY.currentYear
-                    }]
-                }
-            }
-        }
-
-        render(){
-            return(
-                <section className="yearOnYear2">
-                    <h2>Year on Year</h2>
-
-                    <div className="canvas-wrapper">
-                        <canvas className="chart"></canvas>
-                    </div>
-
-                </section>
-            );
-        }
-    }
-
-
-    ReactDOM.render(
-        <YearOnYear />,
-        document.getElementById('root')
-    );
-
-
-    var ctx = document.getElementById("myChart").getContext('2d');
-
-    var $defaultOptions = {
-        responsive: true,
-        maintainAspectRatio: false,
-        scaleShowVerticalLines: false,
-        drawBorder: false,
-        tension: 0,
-        scales: {
-            yAxes: [{
-                ticks: {
-                    beginAtZero:false
-                }
-            }],
-            xAxes: [{
-                display: false
-            }]
-        }
-    };
-
-    $.ajax({
-
-        url: '/block/updateChart.php',
-
-        data: {
-            function2call 	: 'yearOnYear',
-            year 			: '2018'
-        },
-        type: 'post',
-        dataType: "json",
-
-        success: function(output){
-
-            var myChart = new Chart(ctx, {
-                type: 'line',
-                data: {
-                    labels: months,
-                    datasets: [{
-                        label: 'Current Year',
-                        borderColor: '#000',
-                        fill: '-1',
-                        data: output.currentYear
-                    },
-                        {
-                            label: 'Previous Year',
-                            borderColor: '#af0000',
-                            fill: '-1',
-                            data: output.previousYear
-                        }]
-                },
-                options: $defaultOptions
-            });
-
-        }
-
-    });
-
-</script>
 
 <?php include 'layout/after-body.php'; ?>
 

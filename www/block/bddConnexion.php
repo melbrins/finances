@@ -1,6 +1,6 @@
 <?php
 	class BDD{
-		protected $host = 'localhost'; 
+		protected $host = 'localhost';
 	    protected $user = 'root';
 	    protected $password = 'password';
 	    protected $database = 'app';
@@ -11,7 +11,6 @@
 				$pdo_options[PDO::ATTR_ERRMODE] = PDO::ERRMODE_EXCEPTION;
 				$bdd = new PDO('mysql:host=localhost;dbname=app','root', 'password', $pdo_options);
 
-					
 			}
 
 	
@@ -26,36 +25,23 @@
 	
 	class render extends BDD{
 
-		function getAllTransactions() {
-			
-			$transactions = $this->getPdo()->query('SELECT * FROM Transaction');
+        // ==============
+        // ACCOUNTS
+        // ==============
+        function getAllAccounts() {
+            $query = $this->getPdo()->query('SELECT * FROM Account');
+
+            $accounts_Array = array();
+
+            while ( $data = $query->fetch()){
+                $accounts_Array[] = $data;
+            }
+
+            $query->closeCursor();
 
 
-			if( $transactions != null){
-				
-				return $transactions;
-
-			}else{
-
-				return 'No transactions';
-
-			}
-		}
-
-		function getAllAccounts() {
-			$query = $this->getPdo()->query('SELECT * FROM Account');
-
-			$accounts_Array = array();
-
-			while ( $data = $query->fetch()){
-				$accounts_Array[] = $data;
-			}
-
-			$query->closeCursor();
-
-
-			return $accounts_Array;
-		}
+            return $accounts_Array;
+        }
 
         function getAccountName($accountId){
             $query = $this->getPdo()->query("SELECT name FROM Account WHERE id = '$accountId' ");
@@ -63,145 +49,57 @@
             return $accountName[0];
         }
 
-		function getAllCategories() {
-			$query = $this->getPdo()->query('SELECT * FROM Category');
+        // ==============
+        // CATEGORIES
+        // ==============
+        function getAllCategories() {
+            $query = $this->getPdo()->query('SELECT * FROM Category');
 
-			$categories_Array = array();
-
-			while ( $data = $query->fetch()){
-				$categories_Array[] = $data;
-			}
-
-			$query->closeCursor();
-
-
-			return $categories_Array;
-		}
-
-		function getCategoryName($categoryId){
-		    $query = $this->getPdo()->query("SELECT name FROM Category WHERE id = '$categoryId' ");
-            $categoryName = $query->fetch();
-		    return $categoryName[0];
-        }
-
-        function getMonthName($monthNumber){
-            $months = array(
-                '01'  => 'January',
-                '02'  => 'February',
-                '03'  => 'March',
-                '04'  => 'April',
-                '05'  => 'May',
-                '06'  => 'June',
-                '07'  => 'July',
-                '08'  => 'August',
-                '09'  => 'September',
-                '10' => 'October',
-                '11' => 'November',
-                '12' => 'December'
-            );
-
-            return $months[$monthNumber];
-        }
-
-        function updateCategory($transactionId, $category){
-
-            $set = $this->getPdo()->prepare("UPDATE Transaction SET category_id = :category WHERE id = :id ");
-
-            $set->execute(array(
-                'category'  => $category,
-                'id'        => $transactionId
-            ));
-
-            return 'success';
-
-        }
-
-
-        function getAllTriggers() {
-            $query = $this->getPdo()->query('SELECT * FROM _trigger');
-
-            $trigger_Array = array();
+            $categories_Array = array();
 
             while ( $data = $query->fetch()){
-                $trigger_Array[] = $data;
+                $categories_Array[] = $data;
             }
 
             $query->closeCursor();
 
 
-            return $trigger_Array;
+            return $categories_Array;
         }
 
-        function getTriggerPerCategory($categoryId){
-		    $query = $this->getPdo()->prepare("SELECT * FROM _trigger WHERE category_id = :category");
-
-		    $query->execute(array(
-		        'category' => $categoryId
-            ));
-
-            return $query;
+        function getCategoryName($categoryId){
+            $query = $this->getPdo()->query("SELECT name FROM Category WHERE id = '$categoryId' ");
+            $categoryName = $query->fetch();
+            return $categoryName[0];
         }
 
+        function updateCategory($transactionId, $category, $allTransactions){
 
-        function getTransactionPerId($id){
-            $transaction = $this->getPdo()->prepare("SELECT * FROM Transaction WHERE id = :id ");
+            if($allTransactions == true){
 
+                $merchantName = $this->getMerchant($transactionId);
 
-            $transaction->execute(array(
-		        'id' => $id
-            ));
+                if($merchantName == null){
+                    $merchantName = $this->getTransactionName($transactionId);
+                    $merchantName = str_replace("'", "\'", $merchantName);
+                    $merchantName = explode(' ON ', $merchantName);
 
-            if( $transaction != null){
-
-                return $transaction->fetch();
+                    $set = $this->getPdo()->query("UPDATE Transaction SET category_id = '$category' WHERE name LIKE '%$merchantName[0]%' ");
+                }else{
+                    $set = $this->getPdo()->query("UPDATE Transaction SET category_id = '$category' WHERE merchant = '$merchantName' ");
+                }
 
             }else{
+                $set = $this->getPdo()->prepare("UPDATE Transaction SET category_id = :category WHERE id = :id ");
 
-                return 'No transactions';
-
+                $set->execute(array(
+                    'category' => $category,
+                    'id' => $transactionId
+                ));
             }
-        }
 
-		function getTransactions($account, $startDate, $endDate){
+            return 'success';
 
-            $transactions = $this->getPdo()->prepare("SELECT * FROM Transaction WHERE account_id = :account AND day BETWEEN :start AND :endd ORDER BY day DESC");
-
-            $transactions->execute(array(
-                'account' 	=> $account,
-                'start'    	=> $startDate,
-                'endd'    	=> $endDate
-            ));
-
-            if( $transactions != null){
-
-                return $transactions;
-
-            }else{
-
-                return 'No transactions';
-
-            }
-        }
-
-        function getTransactionPerCategory($account, $category, $startDate, $endDate){
-            $transactions = $this->getPdo()->prepare("SELECT * FROM Transaction WHERE account_id = :account AND category_id = :category AND day BETWEEN :start AND :endd ORDER BY day DESC");
-
-            $transactions->execute(array(
-                'account' 	=> $account,
-                'category'  => $category,
-                'start'    	=> $startDate,
-                'endd'    	=> $endDate
-            ));
-
-            if( $transactions != null){
-
-                return $transactions;
-
-            }else{
-
-                return 'No transactions';
-
-            }
         }
 
         function jSonCategory($account, $category, $startDate, $endDate){
@@ -245,91 +143,199 @@
             }
         }
 
+        // ==============
+        // TRANSACTIONS
+        // ==============
+        function getAllTransactions() {
 
-		function getMonthSpending ($account, $month, $year) {
-			$query = $this->getPdo()->prepare("SELECT amount FROM Transaction WHERE amount LIKE '%-%' AND account_id = :account AND day BETWEEN :start AND :end ");
-		
-			$query->execute(array(
-				'account' 	=> $account,
-				'start'    	=> $year . '-' . $month . '-01',
-				'end'    	=> $year . '-' . $month . '-31'
-			));
+            $transactions = $this->getPdo()->query('SELECT * FROM Transaction');
 
-			while ( $data = $query->fetch()){
-				
-				$amount += str_replace('-', '', $data['amount']);
-				
-			}
 
-			return $amount;
-		}
+            if( $transactions != null){
 
-        function getMonthSpendingPerCategory ($account, $category, $month, $year) {
-            $query = $this->getPdo()->prepare("SELECT amount FROM Transaction WHERE amount LIKE '%-%' AND account_id = :account AND category_id = :category AND day BETWEEN :start AND :end ");
+                return $transactions;
+
+            }else{
+
+                return 'No transactions';
+
+            }
+        }
+
+        function getTransactionName($transactionId){
+            $query = $this->getPdo()->query("SELECT name FROM Transaction WHERE id = '$transactionId' ");
+
+            $transactionName = $query->fetch();
+            $transactionName = explode(' ON ', $transactionName[0]);
+
+            return $transactionName[0];
+        }
+
+        function getTransactionPerId($id){
+            $transaction = $this->getPdo()->prepare("SELECT * FROM Transaction WHERE id = :id ");
+
+
+            $transaction->execute(array(
+                'id' => $id
+            ));
+
+            if( $transaction != null){
+
+                return $transaction->fetch();
+
+            }else{
+
+                return 'No transactions';
+
+            }
+        }
+
+        function getTransactions($account, $startDate, $endDate){
+
+            $transactions = $this->getPdo()->prepare("SELECT * FROM Transaction WHERE account_id = :account AND day BETWEEN :start AND :endd ORDER BY day DESC");
+
+            $transactions->execute(array(
+                'account' 	=> $account,
+                'start'    	=> $startDate,
+                'endd'    	=> $endDate
+            ));
+
+            if( $transactions != null){
+
+                return $transactions;
+
+            }else{
+
+                return 'No transactions';
+
+            }
+        }
+
+        function getTransactionPerCategory($account, $category, $startDate, $endDate){
+            $transactions = $this->getPdo()->prepare("SELECT * FROM Transaction WHERE account_id = :account AND category_id = :category AND day BETWEEN :start AND :endd ORDER BY day DESC");
+
+            $transactions->execute(array(
+                'account' 	=> $account,
+                'category'  => $category,
+                'start'    	=> $startDate,
+                'endd'    	=> $endDate
+            ));
+
+            if( $transactions != null){
+
+                return $transactions;
+
+            }else{
+
+                return 'No transactions';
+
+            }
+        }
+
+        // param account id, year, month, day
+        // return int
+        function nbrTransaction($account, $start, $end){
+            $query = $this->getPdo()->prepare("SELECT COUNT(id) FROM Transaction WHERE amount LIKE '%-%' AND account_id = :account AND day BETWEEN :start AND :end");
 
             $query->execute(array(
                 'account' 	=> $account,
-                'category' 	=> $category,
-                'start'    	=> $year . '-' . $month . '-01',
-                'end'    	=> $year . '-' . $month . '-31'
+                'start'    	=> $start,
+                'end'       => $end
             ));
 
-            while ( $data = $query->fetch()){
-
-                $amount += str_replace('-', '', $data['amount']);
-
-            }
-
-            return $amount;
+            return $query->fetch();
         }
 
-		function getMonthIncome ($account, $month, $year) {
-			$query = $this->getPdo()->prepare("SELECT amount FROM Transaction WHERE amount NOT LIKE '%-%' AND account_id = :account AND day BETWEEN :start AND :end ");
-		
-			$query->execute(array(
-				'account' 	=> $account,
-				'start'    	=> $year . '-' . $month . '-01',
-				'end'    	=> $year . '-' . $month . '-31'
-			));
+        function nbrTransactionTrigger($account, $start, $end, $trigger){
+            $query = $this->getPdo()->prepare("SELECT COUNT(id) FROM Transaction WHERE name LIKE :trigger AND account_id = :account AND day BETWEEN :start AND :end");
 
-			while ( $data = $query->fetch()){
-				
-				$amount += $data['amount'];
-				
-			}
+            $query->execute(array(
+                'account' 	=> $account,
+                'start'    	=> $start,
+                'end'       => $end,
+                'trigger'   => '%'. $trigger .'%'
+            ));
 
-			return $amount;
-		}
+            return $query->fetch();
+        }
 
-		function getMonthSpendingRange ($account, $months, $year) {
+        function getAllSimilarTransactions($account, $trigger){
+            $query = $this->getPdo()->prepare("SELECT * FROM Transaction WHERE name LIKE :trigger AND account_id = :account");
 
-			foreach ($months as $month){
+            $query->execute(array(
+                'account' 	=> $account,
+                'trigger'   => '%'. $trigger .'%'
+            ));
 
-				$spent = $this->getMonthSpending($account, $month, $year);
+            return $query;
+        }
 
-				if(!isset($currentMax) OR $currentMax < $spent){
-					$currentMax = $spent;
-				}
+        function similarTransactions($account, $start, $end, $trigger){
+            $query = $this->getPdo()->prepare("SELECT * FROM Transaction WHERE name LIKE :trigger AND account_id = :account AND day BETWEEN :start AND :end");
 
-				if(!isset($currentMin) OR $currentMin > $spent){
-					$currentMin = $spent;
-				}
-				
-			}
+            $query->execute(array(
+                'account' 	=> $account,
+                'start'    	=> $start,
+                'end'       => $end,
+                'trigger'   => '%'. $trigger .'%'
+            ));
 
-			$range = array(
-				'min' => $currentMin,
-				'max' => $currentMax
-			);
+            return $query;
+        }
 
-			return $range;
-		}
+        function lastTransaction($account){
+
+            $query = $this->getPdo()->query('SELECT * FROM Transaction ORDER BY id DESC LIMIT 0, 1');
+
+            return $query->fetch();
+        }
 
 
-		function yearSpendingPerMonth ($account, $year){
+        // ==============
+        // MERCHANT
+        // ==============
+        function getMerchant($transactionId){
+            $query = $this->getPdo()->query("SELECT merchant FROM Transaction WHERE id = '$transactionId' ");
 
-		    $months = array(
-		        '1'  => 'January',
+            $merchantName = $query->fetch();
+
+            return $merchantName[0];
+        }
+
+        function getAllTriggers() {
+            $query = $this->getPdo()->query('SELECT * FROM _trigger');
+
+            $trigger_Array = array();
+
+            while ( $data = $query->fetch()){
+                $trigger_Array[] = $data;
+            }
+
+            $query->closeCursor();
+
+
+            return $trigger_Array;
+        }
+
+        function getTriggerPerCategory($categoryId){
+            $query = $this->getPdo()->prepare("SELECT * FROM _trigger WHERE category_id = :category");
+
+            $query->execute(array(
+                'category' => $categoryId
+            ));
+
+            return $query;
+        }
+
+
+
+
+
+
+        function yearSpendingPerMonth ($account, $year){
+
+            $months = array(
+                '1'  => 'January',
                 '2'  => 'February',
                 '3'  => 'March',
                 '4'  => 'April',
@@ -382,22 +388,145 @@
 
         function yearOnYear ($account, $year, $type){
 
-		    if($type == 'credit') {
+            if($type == 'credit') {
 
-		        $income['currentYear']      = $this->yearIncomePerMonth($account, $year);
+                $income['currentYear']      = $this->yearIncomePerMonth($account, $year);
                 $income['previousYear']     = $this->yearIncomePerMonth($account, $year - 1);
 
                 return $income;
 
             }else{
 
-		        $spending['currentYear']    = $this->yearSpendingPerMonth($account, $year);
+                $spending['currentYear']    = $this->yearSpendingPerMonth($account, $year);
                 $spending['previousYear']   = $this->yearSpendingPerMonth($account, $year - 1);
 
                 return $spending;
 
             }
         }
+
+
+
+
+        function getMonthName($monthNumber){
+            $months = array(
+                '01'  => 'January',
+                '02'  => 'February',
+                '03'  => 'March',
+                '04'  => 'April',
+                '05'  => 'May',
+                '06'  => 'June',
+                '07'  => 'July',
+                '08'  => 'August',
+                '09'  => 'September',
+                '10' => 'October',
+                '11' => 'November',
+                '12' => 'December'
+            );
+
+            return $months[$monthNumber];
+        }
+
+        function getMonthSpending ($account, $month, $year) {
+            $query = $this->getPdo()->prepare("SELECT amount FROM Transaction WHERE amount LIKE '%-%' AND account_id = :account AND day BETWEEN :start AND :end ");
+
+            $query->execute(array(
+                'account' 	=> $account,
+                'start'    	=> $year . '-' . $month . '-01',
+                'end'    	=> $year . '-' . $month . '-31'
+            ));
+
+            while ( $data = $query->fetch()){
+
+                $amount += str_replace('-', '', $data['amount']);
+
+            }
+
+            return $amount;
+        }
+
+        function getMonthSpendingPerCategory ($account, $category, $month, $year) {
+            $query = $this->getPdo()->prepare("SELECT amount FROM Transaction WHERE amount LIKE '%-%' AND account_id = :account AND category_id = :category AND day BETWEEN :start AND :end ");
+
+            $query->execute(array(
+                'account' 	=> $account,
+                'category' 	=> $category,
+                'start'    	=> $year . '-' . $month . '-01',
+                'end'    	=> $year . '-' . $month . '-31'
+            ));
+
+            while ( $data = $query->fetch()){
+
+                $amount += str_replace('-', '', $data['amount']);
+
+            }
+
+            return $amount;
+        }
+
+        function getMonthIncome ($account, $month, $year) {
+            $query = $this->getPdo()->prepare("SELECT amount FROM Transaction WHERE amount NOT LIKE '%-%' AND account_id = :account AND day BETWEEN :start AND :end ");
+
+            $query->execute(array(
+                'account' 	=> $account,
+                'start'    	=> $year . '-' . $month . '-01',
+                'end'    	=> $year . '-' . $month . '-31'
+            ));
+
+            while ( $data = $query->fetch()){
+
+                $amount += $data['amount'];
+
+            }
+
+            return $amount;
+        }
+
+        function getMonthSpendingRange ($account, $months, $year) {
+
+            foreach ($months as $month){
+
+                $spent = $this->getMonthSpending($account, $month, $year);
+
+                if(!isset($currentMax) OR $currentMax < $spent){
+                    $currentMax = $spent;
+                }
+
+                if(!isset($currentMin) OR $currentMin > $spent){
+                    $currentMin = $spent;
+                }
+
+            }
+
+            $range = array(
+                'min' => $currentMin,
+                'max' => $currentMax
+            );
+
+            return $range;
+        }
+
+
+
+
+        // param account id, year, month, day
+        // return int
+        function daySpending($account, $year, $month, $day){
+            $query = $this->getPdo()->prepare("SELECT amount FROM Transaction WHERE amount LIKE '%-%' AND account_id = :account AND day = :day");
+
+            $query->execute(array(
+                'account' 	=> $account,
+                'day'    	=> $year . '-' . $month . '-' . $day
+            ));
+
+            $amount = $this->sumSpending($query);
+
+            return $amount;
+        }
+
+
+
+
 
         function incomeVsSpending ($account, $year){
 
@@ -448,20 +577,7 @@
             return $days;
         }
 
-        // param account id, year, month, day
-        // return int
-        function daySpending($account, $year, $month, $day){
-            $query = $this->getPdo()->prepare("SELECT amount FROM Transaction WHERE amount LIKE '%-%' AND account_id = :account AND day = :day");
 
-            $query->execute(array(
-                'account' 	=> $account,
-                'day'    	=> $year . '-' . $month . '-' . $day
-            ));
-
-            $amount = $this->sumSpending($query);
-
-            return $amount;
-        }
 
 
         //  param Mysql query result
@@ -476,45 +592,7 @@
             return $amount;
         }
 
-        // param account id, year, month, day
-        // return int
-        function nbrTransaction($account, $start, $end){
-            $query = $this->getPdo()->prepare("SELECT COUNT(id) FROM Transaction WHERE amount LIKE '%-%' AND account_id = :account AND day BETWEEN :start AND :end");
 
-            $query->execute(array(
-                'account' 	=> $account,
-                'start'    	=> $start,
-                'end'       => $end
-            ));
-
-            return $query->fetch();
-        }
-
-        function nbrTransactionTrigger($account, $start, $end, $trigger){
-            $query = $this->getPdo()->prepare("SELECT COUNT(id) FROM Transaction WHERE name LIKE :trigger AND account_id = :account AND day BETWEEN :start AND :end");
-
-            $query->execute(array(
-                'account' 	=> $account,
-                'start'    	=> $start,
-                'end'       => $end,
-                'trigger'   => '%'. $trigger .'%'
-            ));
-
-            return $query->fetch();
-        }
-
-        function similarTransactions($account, $start, $end, $trigger){
-            $query = $this->getPdo()->prepare("SELECT * FROM Transaction WHERE name LIKE :trigger AND account_id = :account AND day BETWEEN :start AND :end");
-
-            $query->execute(array(
-                'account' 	=> $account,
-                'start'    	=> $start,
-                'end'       => $end,
-                'trigger'   => '%'. $trigger .'%'
-            ));
-
-            return $query;
-        }
 
         function spendingMonthToDateCategory ($account, $startDate, $endDate){
 
@@ -626,12 +704,7 @@
 			return $average;
 		}
 
-		function lastTransaction($account){
 
-		    $query = $this->getPdo()->query('SELECT * FROM Transaction ORDER BY id DESC LIMIT 0, 1');
-
-		    return $query->fetch();
-        }
 	}
 
 	class import extends BDD{

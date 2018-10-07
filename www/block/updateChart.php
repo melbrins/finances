@@ -13,6 +13,7 @@ if(isset($_POST['function2call']) && !empty($_POST['function2call'])) {
     $previousMonth  = $currentMonth - 1;
     $transactionId  = $_POST['transaction'];
     $category       = $_POST['category'];
+    $allTransactions = $_POST['all'];
 
 
     if(!isset($_POST['start']) OR !isset($_POST['end'])) {
@@ -44,7 +45,7 @@ if(isset($_POST['function2call']) && !empty($_POST['function2call'])) {
         case 'yearSpendingPerMonthPerCategory'  : print json_encode($render->yearSpendingPerMonthPerCategory("1", $category, $year)); break;
         case 'yearOnYear'                       : print json_encode($render->yearOnYear("1", $year, $type)); break;
         case 'incomeVsSpending'                 : print json_encode($render->incomeVsSpending("1", $year)); break;
-        case 'updateCategory'                   : print $render->updateCategory($transactionId, $category);
+        case 'updateCategory'                   : print $render->updateCategory($transactionId, $category, $allTransactions);
         case 'other' : break;// do something;break;
             // other cases
     }

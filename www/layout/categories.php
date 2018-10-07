@@ -18,18 +18,19 @@
                 ?>
 
                 <li>
-                    <div class="category-image"></div>
+                    <a href="category-view.php?category=<?php echo $category['id']; ?>">
+                        <div class="category-image"></div>
 
-                    <div class="category-name">
-                        <p><?php echo $category['name']; ?></p>
-                        <p><?php echo $category['id']; ?></p>
-                    </div>
+                        <div class="category-name">
+                            <p><?php echo $category['name']; ?></p>
+                            <p><?php echo $category['id']; ?></p>
+                        </div>
 
-                    <div class="category-amount">
-                        <p class="amount" style="text-align:right;">£<?php echo $tmp_category_month_spending; ?></p>
-                        <p style="font-size: 8px; text-align: right;"><?php echo round($tmp_category_trend, 2); ?> % (£<?php echo $tmp_category_last_month_spending; ?>)</p>
-                    </div>
-
+                        <div class="category-amount">
+                            <p class="amount" style="text-align:right;">£<?php echo $tmp_category_month_spending; ?></p>
+                            <p style="font-size: 8px; text-align: right;"><?php echo round($tmp_category_trend, 2); ?> % (£<?php echo $tmp_category_last_month_spending; ?>)</p>
+                        </div>
+                    </a>
                 </li>
 
                 <!--                        <li><p>Last month:--><?php //echo $tmp_category_last_month_spending;

@@ -33516,11 +33516,12 @@ if (process.env.NODE_ENV === 'production') {
 var Chart   = require('chart.js'),
     React   = require('react'),
     $       = require('jquery'),
-    drp     = require('daterangepicker');
+    drp     = require('daterangepicker'),
     Odometer = require('odometer');
 
-
+// ====================
 // VARIABLES
+// ====================
 var $defaultOptions = {
     responsive: true,
     maintainAspectRatio: false,
@@ -33594,6 +33595,10 @@ var months = [
 ];
 
 $(document).ready(function($) {
+
+    $( function() {
+        $( ".tabs" ).tabs();
+    } );
 
     var monthToDate;
 
@@ -33677,13 +33682,13 @@ $(document).ready(function($) {
                     type: 'line',
                     data: {
                         labels: months,
-                        datasets: [{
-                            label: 'Income',
-                            borderColor: '#000',
-                            fill: '-1',
-                            data: output.income
-                        },
-                            {
+                        datasets:
+                            [{
+                                label: 'Income',
+                                borderColor: '#000',
+                                fill: '-1',
+                                data: output.income
+                            },{
                                 label: 'Spending',
                                 borderColor: '#af0000',
                                 fill: '-1',
@@ -33702,7 +33707,6 @@ $(document).ready(function($) {
     // ====================
     // SPENDING CATEGORY
     // ====================
-
     if(document.getElementById("monthSpentCategory")) {
         var mtdC = document.getElementById("monthSpentCategory").getContext('2d');
 
@@ -33770,6 +33774,9 @@ $(document).ready(function($) {
         });
     }
 
+
+
+
     // ====================
     // MONTH TO DATE
     // ====================
@@ -33803,6 +33810,7 @@ $(document).ready(function($) {
 
         updateChart(monthToDate, $options);
     }
+
 
     // ====================
     // MONTH TO DATE
@@ -33839,6 +33847,10 @@ $(document).ready(function($) {
         updateChart(monthToDate2, $options);
     }
 
+
+    // ====================
+    // CATEGORY VIEW
+    // ====================
     if(document.getElementById("categorySpending")){
         var cty = document.getElementById("categorySpending").getContext('2d');
 
@@ -33847,9 +33859,13 @@ $(document).ready(function($) {
             data: {
                 labels: months,
                 datasets: [{
-                    label: '£ Spent',
+                    label: 'Current Year',
                     data: [0,0,0,0,0,0,0],
-                    backgroundColor: 'rgba(85, 85, 85, 0.5)'
+                    backgroundColor: 'rgba(250, 70, 220, 0.8)'
+                },{
+                    label: 'Last Year',
+                    data: [0,0,0,0,0,0,0],
+                    backgroundColor: 'rgba(69, 199, 250, 0.8)'
                 }]
             },
             options: {
@@ -33866,15 +33882,34 @@ $(document).ready(function($) {
         });
 
         if(categoryJson){
-
             categorySpending.data.labels             = Object.keys(categoryJson);
             categorySpending.data.datasets[0].data   = Object.values(categoryJson);
+            categorySpending.data.datasets[1].data   = Object.values(categoryJson2);
             categorySpending.update();
+        }
 
-            console.log('yeah');
+        if(generalCategoryJson){
+            for(var key in generalCategoryJson[2018]){
+                console.log("Key: " + key);
+
+                for(var key2 in generalCategoryJson[2018][key]){
+                    console.log("Key2: " + key2);
+
+                    for(var key3 in generalCategoryJson[2018][key][key2]){
+                        console.log("Key3: " + key3);
+                        console.log("Value: " + generalCategoryJson[2018][key][key2][key3]['id']);
+                    }
+                }
+            }
+
         }
     }
 
+
+
+    // ====================
+    // FUNCTIONS
+    // ====================
     function updateType(graph, chartLabel, chartType, chartData, chartOptions){
 
         alert(graph);
@@ -33908,6 +33943,38 @@ $(document).ready(function($) {
 
         });
     }
+
+    function applyCategory(transactionId, categoryId, allTransactions){
+
+        $.ajax({
+
+            url: '/block/updateChart.php',
+
+            data: {
+                function2call   : 'updateCategory',
+                transaction     : transactionId,
+                category        : categoryId,
+                all             : allTransactions
+            },
+            type: 'post',
+
+            success: function(output){
+                console.log(output)
+            }
+
+        });
+
+    }
+
+    $( "#transaction-category" ).submit(function(event){
+        event.preventDefault();
+
+        categoryId      = $('.categories').val();
+        transactionId   = $('.transactionId').val();
+        allTransactions = $('#apply-to-all')[0].checked;
+
+        applyCategory(transactionId, categoryId, allTransactions);
+    });
 
 } );
 },{"chart.js":1,"daterangepicker":58,"jquery":63,"odometer":66,"react":72}]},{},[73]);

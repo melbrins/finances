@@ -1,5 +1,13 @@
 @import '../node_modules/reset-css/sass/reset';
+@import '/node_modules/jquery-ui/themes/base/all.css';
+//@import "/node_modules/jquery-ui/themes/base/base.css";
+//@import "/node_modules/jquery-ui/themes/base/theme.css";
 @import 'typography';
+
+// VARIABLES
+$bg-color         : #2a2a2a;
+$bg-color-canvas  : rgba(85, 85, 85, 0.5);
+
 
 // HEADER
 nav{
@@ -17,9 +25,9 @@ nav{
     align-items       : center;
 
     li{
-      height  : 60px;
-      width   : 33.33vw;
-      text-align: center;
+      height      : 60px;
+      width       : 33.33vw;
+      text-align  : center;
 
       a{
         line-height: 60px;
@@ -29,7 +37,7 @@ nav{
 }
 
 body {
-  background-color: #2a2a2a;
+  background-color: $bg-color;
 
   .wrapper {
     padding: 20px;
@@ -41,7 +49,7 @@ section{
   color: #fff;
 
   &:not(.canvas) {
-    background-color: rgba(85, 85, 85, 0.5);
+    background-color: $bg-color-canvas;
     padding: 20px;
     border-radius: 10px;
     box-shadow: 0px 5px 5px rgba(0, 0, 0, 0.2);
@@ -142,7 +150,7 @@ ul.categories{
     color: #fff;
   }
 
-  ul li{
+  ul li a{
     background-color  : rgba(85,85,85,0.5);
     padding         : 10px;
     width           : 100%;
@@ -153,6 +161,7 @@ ul.categories{
     flex-direction  : row;
     box-sizing      : border-box;
     color           : #fff;
+    text-decoration : none;
 
     .category-image,
     .category-amount{
@@ -195,18 +204,24 @@ ul.categories{
   margin-left   : -20px;
 
   .day-title{
-    padding   : 15px 10px;
-    margin-top: 20px;
+    display           : flex;
+    flex-direction    : row;
+    align-items       : center;
+    justify-content   : space-between;
+    padding     : 15px 10px;
+    margin-top  : 20px;
 
-    p{
+    p,
+    span.day-amount{
       font-size : 12px;
       color     : #999;
     }
+
   }
 
   ul li{
     a {
-      background-color  : rgba(85, 85, 85, 0.5);
+      background-color  : $bg-color-canvas;
       padding           : 10px;
       width             : 100%;
       margin-bottom     : 1px;

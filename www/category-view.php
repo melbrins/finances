@@ -2,32 +2,43 @@
 <html lang="en">
 <head>
 
+
 	<?php include 'layout/head.php'; ?>
+    <?php
+
+        $import  	= new import();
+        $render  	= new render();
+
+        $categoryId             = $_GET['category'];
+        $categoryName           = $render->getCategoryName($categoryId );
+        // GET JSON FOR CURRENT YEAR
+        $jsonCategory           = $render->yearSpendingPerMonthPerCategory('1', $categoryId ,'2018');
+        // GET JSON FOR LAST YEAR
+        $jsonCategory2          = $render->yearSpendingPerMonthPerCategory('1', $categoryId ,'2017');
+        // GET JSON FOR EVERY INFORMATION FROM THIS CATEGORY AT ONCE
+        $generalJsonCategory    = $render->jSonCategory('1', $categoryId,'2018-01-01', '2018-12-31');
+        // GET ALL CURRENT YEAR TRANSACTIONS
+        $reponse                = $render->getTransactionPerCategory('1', $categoryId,'2017-01-01', '2018-12-31');
+        // GET LIST OF CATEGORY TRIGGER
+        $categoryTrigger        = $render->getTriggerPerCategory($categoryId);
+        // APPLY CATEGORY ID TO ALL TRANSACTIONS FOUND WITH ONCE OF THE CATEGORY TRIGGER
+        foreach($categoryTrigger as $trigger){
+            $import->setTrigger($trigger['category_id'], $trigger['trigger']);
+        }
+
+    ?>
+
+    <title>Category - <?php echo $categoryName; ?></title>
 
 </head>
 
 <body>
 
 <?php include 'layout/header.php'; ?>
-	<?php 
-		$import  	= new import();
-		$render  	= new render();
 
-		$categoryId         = $_GET['category'];
-		$categoryName       = $render->getCategoryName($categoryId );
-        $jsonCategory       = $render->yearSpendingPerMonthPerCategory('1', $categoryId ,'2018');
-		$reponse            = $render->getTransactionPerCategory('1', $categoryId,'2018-01-01', '2018-12-31');
-        $categoryTrigger    = $render->getTriggerPerCategory($categoryId);
-
-        foreach($categoryTrigger as $trigger){
-            $import->setTrigger($trigger['category_id'], $trigger['trigger']);
-        }
-
-
-	?>
-
-    <h1><?php echo $categoryName; ?></h1>
-    <h3> YEAR SPENDING PER MONTH </h3>
+    <div class="wrapper">
+        <h1><?php echo $categoryName; ?></h1>
+    </div>
 
     <section class="canvas">
         <canvas id="categorySpending" width="1200" height="400"></canvas>
@@ -56,6 +67,8 @@
 
 <script>
     categoryJson = <?php print($jsonCategory); ?>;
+    categoryJson2 = <?php print($jsonCategory2); ?>;
+    generalCategoryJson = <?php print($generalJsonCategory); ?>;
 </script>
 
 </html>

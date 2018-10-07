@@ -3,6 +3,7 @@
     setlocale(LC_MONETARY, 'en_GB');
 ?>
 
+<meta name="author" content="Anthony Pucelle">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 
 <link href="https://fonts.googleapis.com/css?family=Nunito:200,400,700,900" rel="stylesheet">

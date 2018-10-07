@@ -42,6 +42,9 @@ module.exports = function(grunt){
         },
         // grunt-babel
         babel:{
+            options:{
+                sourceType: module
+            },
             dist: {
                 files:{
                     'js/main.js' :"js/main.js"

@@ -4,32 +4,37 @@
 
 	<?php include 'layout/head.php'; ?>
 
+    <?php
+
+        $import  	= new import();
+        $render  	= new render();
+
+        $transactionId          = $_GET['id'];
+        $categories             = $render->getAllCategories();
+        $transaction            = $render->getTransactionPerId($transactionId);
+        $transactionName_array  = explode( ' ON ', $transaction['name']);
+        $transactionName        = $transactionName_array[0];
+        $nbrTransactions        = $render->nbrTransactionTrigger('1', '2017-01-01', '2018-09-31', $transactionName);
+        $reponse                = $render->getAllSimilarTransactions('1', $transactionName);
+
+    ?>
+
+    <title>Transaction -  <?php echo $transactionName; ?>  </title>
+
 </head>
 
 <body>
 
 <?php include 'layout/header.php'; ?>
-	<?php 
-		$import  	= new import();
-		$render  	= new render();
 
-		$transactionId = $_GET['id'];
-
-        $categories = $render->getAllCategories();
-
-        $transaction = $render->getTransactionPerId($transactionId);
-        $transactionName_array = explode( ' ON ', $transaction['name']);
-        $transactionName = $transactionName_array[0];
-        $nbrTest     = $render->nbrTransactionTrigger('1', '2017-01-01', '2018-09-31', $transactionName);
-
-        $reponse     = $render->similarTransactions('1', '2017-01-01', '2018-09-31', $transactionName);
-
-	?>
-
-    <section>
+    <div class="wrapper">
         <span class="date"><?php echo $transaction['day']; ?></span>
         <h1><?php echo $transactionName; ?></h1>
-        <p>Nbr of transactions: <?php echo $nbrTest[0]; ?></p>
+        <p>Nbr of transactions: <?php echo $nbrTransactions[0]; ?></p>
+    </div>
+
+    <section>
+
 
         <span class="amount"><?php echo $transaction['amount']; ?></span>
 
@@ -47,7 +52,7 @@
                 ?>
             </select>
 
-            <input type="checkbox" value="all" id="apply-to-all"/>
+            <input type="checkbox" name="allTransaction" value="all" id="apply-to-all"/>
             <label for="apply-to-all">Apply to All</label>
 
             <button type="submit">Submit</button>
