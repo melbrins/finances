@@ -1,8 +1,16 @@
+@import "compass";
+@import "compass/css3";
+
 @import '../node_modules/reset-css/sass/reset';
 @import '/node_modules/jquery-ui/themes/base/all.css';
-//@import "/node_modules/jquery-ui/themes/base/base.css";
-//@import "/node_modules/jquery-ui/themes/base/theme.css";
+
+@import 'fontawesome/fa-solid';
+@import 'fontawesome/fontawesome';
+
 @import 'typography';
+
+@import 'layout/header';
+
 
 // VARIABLES
 $bg-color         : #2a2a2a;
@@ -16,7 +24,7 @@ nav{
   bottom    : 0;
   width     : 100vw;
   height    : 60px;
-  z-index   : 9999;
+  z-index   : 10;
 
   ul{
     display           : flex;
@@ -41,6 +49,7 @@ body {
 
   .wrapper {
     padding: 20px;
+    padding-top: 10vh;
   }
 }
 

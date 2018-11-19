@@ -14,6 +14,11 @@ if(isset($_POST['function2call']) && !empty($_POST['function2call'])) {
     $transactionId  = $_POST['transaction'];
     $category       = $_POST['category'];
     $allTransactions = $_POST['all'];
+    if (isset($_POST['account']) && $_POST['account']!= 'all'){
+        $account = $_POST['account'];
+    }else{
+        $account = '1,2,3,4';
+    };
 
 
     if(!isset($_POST['start']) OR !isset($_POST['end'])) {
@@ -40,11 +45,11 @@ if(isset($_POST['function2call']) && !empty($_POST['function2call'])) {
     $render = new render();
 
     switch($function2call) {
-        case 'spendingMonthToDateCategory'      : print $render->spendingMonthToDateCategory("1", $startDate, $endDate); break;
-        case 'spendingMonthToDate'              : print json_encode($render->spendingMonthToDate("1", $currentYear, $currentMonth, $currentDay)); break;
-        case 'yearSpendingPerMonthPerCategory'  : print json_encode($render->yearSpendingPerMonthPerCategory("1", $category, $year)); break;
-        case 'yearOnYear'                       : print json_encode($render->yearOnYear("1", $year, $type)); break;
-        case 'incomeVsSpending'                 : print json_encode($render->incomeVsSpending("1", $year)); break;
+        case 'spendingMonthToDateCategory'      : print $render->spendingMonthToDateCategory($account, $startDate, $endDate); break;
+        case 'spendingMonthToDate'              : print json_encode($render->spendingMonthToDate($account, $currentYear, $currentMonth, $currentDay)); break;
+        case 'yearSpendingPerMonthPerCategory'  : print json_encode($render->yearSpendingPerMonthPerCategory($account, $category, $year)); break;
+        case 'yearOnYear'                       : print json_encode($render->yearOnYear($account, $year, $type)); break;
+        case 'incomeVsSpending'                 : print json_encode($render->incomeVsSpending($account, $year)); break;
         case 'updateCategory'                   : print $render->updateCategory($transactionId, $category, $allTransactions);
         case 'other' : break;// do something;break;
             // other cases

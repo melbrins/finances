@@ -1,8 +1,16 @@
 var Chart   = require('chart.js'),
     React   = require('react'),
     $       = require('jquery'),
-    drp     = require('daterangepicker'),
+    drp     = require('daterangepicker');
     Odometer = require('odometer');
+
+// import 'Components/chart_IncomeVsSpending/js/IncomceVsSpending.js';
+
+
+
+// function openMenu(){
+//     $('#account-menu').show();
+// };
 
 // ====================
 // VARIABLES
@@ -81,9 +89,15 @@ var months = [
 
 $(document).ready(function($) {
 
-    $( function() {
-        $( ".tabs" ).tabs();
-    } );
+    var accountMenu = $('#account-menu');
+
+    window.toggleAccount = function () {
+        accountMenu.toggleClass('active');
+    };
+
+    // $( function() {
+    //     $( ".tabs" ).tabs();
+    // } );
 
     var monthToDate;
 
@@ -92,12 +106,12 @@ $(document).ready(function($) {
     var mtdData = {
         labels: days,
         datasets: [{
-            label: 'Current Month',
-            backgroundColor: [ 'rgba(255, 99, 132, 0.2)' ],
-            borderColor: [ 'rgba(255,99,132,1)' ],
-            borderWidth: 1,
-            pointHitRadius: 10,
-            pointRadius: 0
+            label               : 'Current Month',
+            backgroundColor     : [ 'rgba(255, 99, 132, 0.2)' ],
+            borderColor         : [ 'rgba(255,99,132,1)' ],
+            borderWidth         : 1,
+            pointHitRadius      : 10,
+            pointRadius         : 0
         }]
     };
 
@@ -111,14 +125,13 @@ $(document).ready(function($) {
             data: {
                 function2call 	: 'yearOnYear',
                 year 			: '2018',
-                type            : 'debit'
+                type            : 'debit',
+                account         : window.account
             },
             type: 'post',
             dataType: "json",
 
             success: function(output){
-
-                console.log(output);
 
                 var myChart = new Chart(ctx, {
                     type: 'line',
@@ -145,23 +158,24 @@ $(document).ready(function($) {
         });
     }
 
+    // ====================
+    // INCOME VS SPENDING
+    // ====================
     if(document.getElementById("incomeVsSpending")){
         var iVsS = document.getElementById("incomeVsSpending").getContext('2d');
-
         $.ajax({
 
             url: '/block/updateChart.php',
 
             data: {
                 function2call 	: 'incomeVsSpending',
-                year 			: '2018'
+                year 			: '2018',
+                account         : window.account
             },
             type: 'post',
             dataType: "json",
 
             success: function(output){
-
-                console.log(output);
 
                 var incomeVsSpending = new Chart(iVsS, {
                     type: 'line',
@@ -187,7 +201,6 @@ $(document).ready(function($) {
 
         });
     }
-
 
     // ====================
     // SPENDING CATEGORY
@@ -240,7 +253,7 @@ $(document).ready(function($) {
         // ------------------
         $(".daterangepicker").daterangepicker();
 
-        $options = { function2call 	: 'spendingMonthToDateCategory' };
+        $options = { function2call 	: 'spendingMonthToDateCategory', account: window.account };
 
         updateChart(spendingCategory, $options);
 
@@ -252,7 +265,8 @@ $(document).ready(function($) {
             $options = {
                 function2call 	: 'spendingMonthToDateCategory',
                 start           : rangeDate.start,
-                end             : rangeDate.end
+                end             : rangeDate.end,
+                account         : window.account
             };
 
             updateChart(spendingCategory, $options);
@@ -277,7 +291,7 @@ $(document).ready(function($) {
         // MONTH TO DATE
         // Ajax Call - Update
         // ------------------
-        $options = { function2call 	: 'spendingMonthToDate' };
+        $options = { function2call 	: 'spendingMonthToDate', account: window.account };
 
 
         $('#MonthtoDate').submit(function(event){
@@ -375,14 +389,14 @@ $(document).ready(function($) {
 
         if(generalCategoryJson){
             for(var key in generalCategoryJson[2018]){
-                console.log("Key: " + key);
+                // console.log("Key: " + key);
 
                 for(var key2 in generalCategoryJson[2018][key]){
-                    console.log("Key2: " + key2);
+                    // console.log("Key2: " + key2);
 
                     for(var key3 in generalCategoryJson[2018][key][key2]){
-                        console.log("Key3: " + key3);
-                        console.log("Value: " + generalCategoryJson[2018][key][key2][key3]['id']);
+                        // console.log("Key3: " + key3);
+                        // console.log("Value: " + generalCategoryJson[2018][key][key2][key3]['id']);
                     }
                 }
             }
@@ -460,5 +474,4 @@ $(document).ready(function($) {
 
         applyCategory(transactionId, categoryId, allTransactions);
     });
-
 } );

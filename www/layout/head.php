@@ -1,6 +1,9 @@
 <?php
     include 'block/bddConnexion.php';
     setlocale(LC_MONETARY, 'en_GB');
+
+    $import  	= new import();
+    $render  	= new render();
 ?>
 
 <meta name="author" content="Anthony Pucelle">

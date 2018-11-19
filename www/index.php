@@ -14,13 +14,8 @@
 
 	<?php
 
-		$import  	= new import();
+        $account    = ($_GET['account']) ? $account = $_GET['account'] : $account = '1,2,3,4';
 
-		$render  	= new render(); 
-
-
-
-		$accounts  	= $render->getAllAccounts();
 		$categories = $render->getAllCategories();
 
 		$currentYear   = date('Y');
@@ -31,37 +26,37 @@
 
         $currentDay     = date('d');
 
-        $reponse  	= $render->getTransactions('1', '2018-'.$currentMonth.'-01', '2018-'.$currentMonth.'-31');
+        $reponse  	= $render->getTransactions($account, '2018-'.$currentMonth.'-01', '2018-'.$currentMonth.'-31');
 
 		$months     = array( "9", "10", "11", "12");
-		$maxSpent   = $render->getMonthSpendingRange("1", $months, $previousYear);
+		$maxSpent   = $render->getMonthSpendingRange($account, $months, $previousYear);
 
-        $previousYearSpendingAverage = $render->yearAverage('1',$previousYear);
-		$currentYearSpendingAverage  = $render->yearAverage('1', $currentYear);
+        $previousYearSpendingAverage = $render->yearAverage($account,$previousYear);
+		$currentYearSpendingAverage  = $render->yearAverage($account, $currentYear);
 
         $evolutionSpendingAverage = - 100 + ( $currentYearSpendingAverage * 100 ) / $previousYearSpendingAverage;
         $evolutionSpendingAverage = sprintf("%.2f%%", $evolutionSpendingAverage);
 
-		$currentMonthSpending   = $render->getMonthSpending('1', $currentMonth, $currentYear);
-        $previousMonthSpending  = $render->getMonthSpending('1', $previousMonth, $currentYear);
+		$currentMonthSpending   = $render->getMonthSpending($account, $currentMonth, $currentYear);
+        $previousMonthSpending  = $render->getMonthSpending($account, $previousMonth, $currentYear);
 
         $evolutionMonthSpending = - 100 + ( $currentMonthSpending * 100 ) / $previousMonthSpending;
         $evolutionMonthSpending = sprintf("%.2f%%", $evolutionMonthSpending);
 
-        $YoY =  $render->yearOnYear('1', '2018', 'debit');
+        $YoY =  $render->yearOnYear($account, '2018', 'debit');
 
-        $lastMonthSpending_array = $render->spendingMonthToDate('1', $currentYear, $previousMonth, $currentDay);
+        $lastMonthSpending_array = $render->spendingMonthToDate($account, $currentYear, $previousMonth, $currentDay);
         $lastMonthSpendingToDate = array_sum($lastMonthSpending_array);
-        $nbrTransactionLastMonth = array_sum($render->nbrTransaction('1', $currentYear . '-' . $previousMonth . '-01', $currentYear . '-' . $previousMonth . '-' . $currentDay));
+        $nbrTransactionLastMonth = array_sum($render->nbrTransaction($account, $currentYear . '-' . $previousMonth . '-01', $currentYear . '-' . $previousMonth . '-' . $currentDay));
 
-        $lastTransaction = $render->lastTransaction('1');
-
+        $lastTransaction = $render->lastTransaction($account);
 	?>
     <script>
-
         YoY = <?php print(json_encode($YoY)); ?>;
         lastMonthSpending_array = <?php print(json_encode($lastMonthSpending_array)); ?>;
+        window.account = <?php ($_GET['account']) ? print($_GET['account']) : print("'all'"); ?>;
         console.log(YoY);
+        console.log(window.account);
     </script>
 
     <div class="wrapper">
@@ -113,14 +108,8 @@
 
         <?php include 'layout/categories.php'; ?>
 
-        <section class="Dashboard">
-            <h2>Income Vs Spending</h2>
-            <div class="canvas-wrapper">
-                <div class="canvas-wrapper">
-                    <canvas id="incomeVsSpending"></canvas>
-                </div>
-            </div>
-        </section>
+        <?php include 'Components/Chart_IncomeVsSpending/template/incomeVsSpending.php'; ?>
+
 
         <section class="Dashboard">
             <h2>Year on Year</h2>
@@ -198,81 +187,6 @@
         <br>
         <br>
         <br>
-
-        <section class="account">
-            <table id="account_table">
-                <thead>
-                    <tr>
-                        <th>
-                            ID
-                        </th>
-
-                        <th>
-                            Name
-                        </th>
-
-                        <th>
-                            Type
-                        </th>
-
-                        <th>
-                            Number
-                        </th>
-                    </tr>
-                </thead>
-
-                <tbody>
-                    <?php
-
-                        foreach( $accounts as $account)
-                        {
-
-                    ?>
-
-                            <tr>
-                                <td>
-                                    <?php echo $account['id']; ?>
-                                </td>
-
-                                <td>
-                                    <?php echo $account['name']; ?>
-                                </td>
-
-                                <td>
-                                    <?php echo $account['type']; ?>
-                                </td>
-
-                                <td>
-                                    <?php echo $account['account_number']; ?>
-                                </td>
-                            </tr>
-
-                    <?php
-
-                        }
-
-                    ?>
-                </tbody>
-            </table>
-            <form method="post" action="block/addAccount.php">
-
-                <label for="account_name">Account Name</label><br>
-                <input type="text" name="account_name"><br>
-
-                <label for="account_type">Account Type</label><br>
-                <select name="account_type">
-                    <option value="personal">Personal</option>
-                    <option value="business">Business</option>
-                </select><br>
-
-                <label for="account_number">Account Number</label><br>
-                <input type="text" name="account_number"><br>
-
-                <br>
-
-                <button type="submit">Add Account</button>
-            </form>
-        </section>
 
     </div>
 

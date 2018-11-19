@@ -57,7 +57,8 @@
 
                             <div class="transaction-name">
                                 <p><?php echo $donnees['name']; ?></p>
-                                <span class="category"><?php echo $donnees['category_id']; ?></span>
+                                <span class="category">category: <?php echo $donnees['category_id']; ?></span>
+                                <span class="account">account: <?php echo $donnees['account_id']; ?></span>
                             </div>
 
                             <div class="transaction-amount">

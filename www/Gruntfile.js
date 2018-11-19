@@ -8,7 +8,25 @@ module.exports = function(grunt){
     // Project Configuration
     grunt.initConfig({
         pkg: grunt.file.readJSON("package.json"),
-
+        //grunt-contrib-copy
+        copy: {
+            libraries: {
+                files: [
+                    {
+                        expand: true,
+                        cwd: 'bower_components/components-font-awesome/webfonts/',
+                        src: ['**/*'],
+                        dest: 'dest/webfonts/'
+                    },
+                    {
+                        expand: true,
+                        cwd: 'bower_components/components-font-awesome/scss/',
+                        src: ['**/*'],
+                        dest: 'scss/fontawesome/'
+                    }
+                ]
+            }
+        },
         // grunt-contrib-jshint
         jshint: {
             all: {
@@ -21,19 +39,30 @@ module.exports = function(grunt){
             }
         },
         // grunt-browserify
+        //
+        // Download libraries
+        //
         browserify:{
             build:{
-                src: 'script/common.js',
+                src: [
+                    'script/common.js'
+                ],
                 dest: 'script/main.js'
             }
         },
         // grunt-contrib-concat
+        //
+        // Join all js source in one file
+        //
         concat:{
             build:{
-                src: 'script/main.js',
+                src: [
+                    'script/main.js'
+                ],
                 dest: 'js/main.js'
             }
         },
+        // grunt-contrib-uglify
         uglify:{
             build:{
                 src: 'js/main.js',
@@ -48,6 +77,17 @@ module.exports = function(grunt){
             dist: {
                 files:{
                     'js/main.js' :"js/main.js"
+                }
+            }
+        },
+        // grunt-contrib-compass
+        compass: {
+            dist: {
+                options: {
+                    fontDir: 'dest/fonts',
+                    sassDir: 'scss',
+                    cssDir: 'dest/css',
+                    sourcemap: true
                 }
             }
         },
@@ -72,14 +112,14 @@ module.exports = function(grunt){
             },
 
             sass:{
-                files: 'scss/stylesheet.scss',
+                files: ['scss/*.scss', 'scss/*/*.scss'],
                 tasks: ['sass']
 
             }
         }
     });
 
-    grunt.registerTask("build", ["browserify", "concat"]);
+    grunt.registerTask("build", ["browserify", "concat", "copy", "sass"]);
 
 
     grunt.registerTask("default", ["build"]);

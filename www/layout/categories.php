@@ -1,18 +1,18 @@
 <div class="categories-overview">
     <ul>
         <?php
-
+        
         foreach($categories as $category){
-            $tmp_category_month_spending         = $render->getMonthSpendingPerCategory('1', $category['id'] ,$currentMonth, $currentYear);
+            $tmp_category_month_spending         = $render->getMonthSpendingPerCategory($account, $category['id'] ,$currentMonth, $currentYear);
 
-            $tmp_category_last_month_spending    = $render->getMonthSpendingPerCategory('1', $category['id'] ,$previousMonth, $currentYear);
-            $tmp_category_2x_month_spending      = $render->getMonthSpendingPerCategory('1', $category['id'] ,$previousMonth -1 , $currentYear);
-            $tmp_category_3x_month_spending      = $render->getMonthSpendingPerCategory('1', $category['id'] ,$previousMonth -2, $currentYear);
+            $tmp_category_last_month_spending    = $render->getMonthSpendingPerCategory($account, $category['id'] ,$previousMonth, $currentYear);
+            $tmp_category_2x_month_spending      = $render->getMonthSpendingPerCategory($account, $category['id'] ,$previousMonth -1 , $currentYear);
+            $tmp_category_3x_month_spending      = $render->getMonthSpendingPerCategory($account, $category['id'] ,$previousMonth -2, $currentYear);
 
             $tmp_category_compare_last_month    = $tmp_category_month_spending - $tmp_category_last_month_spending;
             $tmp_category_trend                 = ( ( $tmp_category_compare_last_month ) / $tmp_category_last_month_spending ) * 100;
 
-            $tmp_category_year_spending         = $render->getMonthSpendingPerCategory('1', $category['id'] ,$currentMonth, $previousYear);
+            $tmp_category_year_spending         = $render->getMonthSpendingPerCategory($account, $category['id'] ,$currentMonth, $previousYear);
 
             if( $tmp_category_month_spending > 0 ) {
                 ?>

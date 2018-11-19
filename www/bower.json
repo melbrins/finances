@@ -1,0 +1,21 @@
+{
+  "name": "finances",
+  "description": "Finance app to control income, spending and taxes",
+  "main": "index.js",
+  "authors": [
+    "melbrins <info@melbrins.com>"
+  ],
+  "license": "MIT",
+  "homepage": "",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ],
+  "dependencies": {
+    "components-font-awesome": "^5.4.2",
+    "jquery": "^3.3.1"
+  }
+}

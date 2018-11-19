@@ -9,16 +9,18 @@
         $import  	= new import();
         $render  	= new render();
 
+        $account    = ($_GET['account']) ? $account = $_GET['account'] : $account = '1,2,3,4';
+
         $categoryId             = $_GET['category'];
         $categoryName           = $render->getCategoryName($categoryId );
         // GET JSON FOR CURRENT YEAR
-        $jsonCategory           = $render->yearSpendingPerMonthPerCategory('1', $categoryId ,'2018');
+        $jsonCategory           = $render->yearSpendingPerMonthPerCategory($account, $categoryId ,'2018');
         // GET JSON FOR LAST YEAR
-        $jsonCategory2          = $render->yearSpendingPerMonthPerCategory('1', $categoryId ,'2017');
+        $jsonCategory2          = $render->yearSpendingPerMonthPerCategory($account, $categoryId ,'2017');
         // GET JSON FOR EVERY INFORMATION FROM THIS CATEGORY AT ONCE
-        $generalJsonCategory    = $render->jSonCategory('1', $categoryId,'2018-01-01', '2018-12-31');
+        $generalJsonCategory    = $render->jSonCategory($account, $categoryId,'2018-01-01', '2018-12-31');
         // GET ALL CURRENT YEAR TRANSACTIONS
-        $reponse                = $render->getTransactionPerCategory('1', $categoryId,'2017-01-01', '2018-12-31');
+        $reponse                = $render->getTransactionPerCategory($account, $categoryId,'2017-01-01', '2018-12-31');
         // GET LIST OF CATEGORY TRIGGER
         $categoryTrigger        = $render->getTriggerPerCategory($categoryId);
         // APPLY CATEGORY ID TO ALL TRANSACTIONS FOUND WITH ONCE OF THE CATEGORY TRIGGER
@@ -27,6 +29,10 @@
         }
 
     ?>
+
+    <script>
+        window.account = <?php ($_GET['account']) ? print($_GET['account']) : print("'all'"); ?>;
+    </script>
 
     <title>Category - <?php echo $categoryName; ?></title>
 
