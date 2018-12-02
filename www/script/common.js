@@ -1,24 +1,9 @@
 var Chart   = require('chart.js'),
-    React   = require('react'),
     $       = require('jquery'),
     drp     = require('daterangepicker');
     Odometer = require('odometer');
 
 // import 'Components/chart_IncomeVsSpending/js/IncomceVsSpending.js';
-
-
-console.log(test);
-
-var jsonContainer = $('.json-result');
-var json = test;
-
-var jsonAmount = 0;
-
-$.each(json['2018']['September']['24'], function (){
-    jsonAmount += this.amount;
-    console.log(jsonAmount);
-});
-
 
 // function openMenu(){
 //     $('#account-menu').show();

@@ -116,11 +116,43 @@ module.exports = function(grunt){
                 tasks: ['sass']
 
             }
+        },
+        // webpack !pay attention to this task!
+        webpack: {
+            build: {
+                entry: './script/script.js',
+                output: {
+                    path: __dirname + '/dest/js/',
+                    filename: 'build.js'
+                },
+                stats: {
+                    colors: false,
+                    modules: true,
+                    reasons: true
+                },
+                storeStatsTo: 'webpackStats',
+                progress: true,
+                failOnError: true,
+                watch: true,
+                module: {
+                    rules: [
+                        {
+                            test: /\.js$/,
+                            exclude: /node_modules/,
+                            loader: "babel-loader",
+                            query: {
+                                presets: ['es2015', 'react']
+                            }
+                        }
+
+                    ]
+                }
+            }
         }
     });
 
     grunt.registerTask("build", ["browserify", "concat", "copy", "sass"]);
-
+    grunt.registerTask("react", ["webpack:build"]);
 
     grunt.registerTask("default", ["build"]);
 };

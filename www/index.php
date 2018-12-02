@@ -26,7 +26,7 @@
 
         $currentDay     = date('d');
 
-        $reponse  	= $render->getTransactions($account, '2018-'.$currentMonth.'-01', '2018-'.$currentMonth.'-31');
+        $reponse  	= $render->getTransactions($account, '2018-'.$previousMonth.'-01', '2018-'.$previousMonth.'-31');
 
 		$months     = array( "9", "10", "11", "12");
 		$maxSpent   = $render->getMonthSpendingRange($account, $months, $previousYear);
@@ -45,8 +45,6 @@
 
         $YoY =  $render->yearOnYear($account, '2018', 'debit');
 
-        $test = $render->jSonCategory('1','1','2018-01-01', '2018-12-01');
-
         $lastMonthSpending_array = $render->spendingMonthToDate($account, $currentYear, $previousMonth, $currentDay);
         $lastMonthSpendingToDate = array_sum($lastMonthSpending_array);
         $nbrTransactionLastMonth = array_sum($render->nbrTransaction($account, $currentYear . '-' . $previousMonth . '-01', $currentYear . '-' . $previousMonth . '-' . $currentDay));
@@ -55,12 +53,9 @@
     ?>
     <script>
         YoY = <?php print(json_encode($YoY)); ?>;
-        window.test = <?= $test ?>;
         lastMonthSpending_array = <?php print(json_encode($lastMonthSpending_array)); ?>;
         window.account = <?php ($_GET['account']) ? print($_GET['account']) : print("'all'"); ?>;
     </script>
-
-    <div class="json-result"></div>
 
     <div class="wrapper">
         <h4>Dashboard</h4>
