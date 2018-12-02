@@ -14,7 +14,7 @@
 
 	<?php
 
-        $account    = ($_GET['account']) ? $account = $_GET['account'] : $account = '1,2,3,4';
+        $account    = ($_GET['account']) ? $_GET['account'] : 0;
 
 		$categories = $render->getAllCategories();
 
@@ -45,19 +45,22 @@
 
         $YoY =  $render->yearOnYear($account, '2018', 'debit');
 
+        $test = $render->jSonCategory('1','1','2018-01-01', '2018-12-01');
+
         $lastMonthSpending_array = $render->spendingMonthToDate($account, $currentYear, $previousMonth, $currentDay);
         $lastMonthSpendingToDate = array_sum($lastMonthSpending_array);
         $nbrTransactionLastMonth = array_sum($render->nbrTransaction($account, $currentYear . '-' . $previousMonth . '-01', $currentYear . '-' . $previousMonth . '-' . $currentDay));
 
         $lastTransaction = $render->lastTransaction($account);
-	?>
+    ?>
     <script>
         YoY = <?php print(json_encode($YoY)); ?>;
+        window.test = <?= $test ?>;
         lastMonthSpending_array = <?php print(json_encode($lastMonthSpending_array)); ?>;
         window.account = <?php ($_GET['account']) ? print($_GET['account']) : print("'all'"); ?>;
-        console.log(YoY);
-        console.log(window.account);
     </script>
+
+    <div class="json-result"></div>
 
     <div class="wrapper">
         <h4>Dashboard</h4>
@@ -189,16 +192,6 @@
         <br>
 
     </div>
-
-    <!--                    <td>-->
-    <!--                        --><?php
-    //
-    //                        $account_id = str_replace('0', '', $donnees['account_id']);
-    //                        $account_id--;
-    //                        echo $accounts[$account_id]['name'];
-    //
-    //                        ?>
-    <!--                    </td>-->
 
 </body>
 

@@ -6,32 +6,35 @@
             $amount     = 0;
             $income     = 0;
 
-
             while ($donnees = $reponse->fetch()) {
-                $debit      = strpos($donnees['amount'],'-');
-                $day        = $donnees['day'];
+                $debit          = strpos($donnees['amount'],'-');
+                $day_id         = $donnees['day_id'];
+                $day            = $donnees['day'];
+                $dayData        = $render->getDay($day, $account);
 
 
                 // Transaction view page - Avoid duplicate transaction
                 if( $donnees['id'] != $transactionId) {
 
 
-                    if ($day != $currentDay){
+                    if ($day_id != $currentDay){
 
-                            if($currentDay != 'start'){
-
-                            $currentDay = $day;
+                            if ($currentDay != 'start'){
                         ?>
 
                                 </ul>
                             </div>
 
-                        <?php }else{ $currentDay = 'started'; } ?>
+                        <?php
+                            }
+
+                            $currentDay = $day_id;
+                        ?>
 
                         <div class="day-wrapper">
                             <div class="day-title">
-                                <p><?php echo $donnees['day']; ?></p>
-                                <span class="day-amount">- £<?php echo $amount; ?></span>
+                                <p><?= $render->getDate($dayData['day']); ?></p>
+                                <span class="day-amount"><?= $dayData['dayTotal']; ?></span>
                             </div>
 
                             <ul>

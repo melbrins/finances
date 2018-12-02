@@ -24,6 +24,103 @@
 	}
 
 class render extends BDD{
+    // ==============
+    // ACCOUNTS
+    // ==============
+    function getDate($date){
+        return date('d F Y', strtotime($date));
+    }
+
+    function getDay($day, $account){
+
+        $day_array = array();
+
+        $query = $this->getPdo()->prepare('SELECT * FROM Day WHERE day = :day AND account_id = :account');
+
+        $query->execute(array(
+            'day' => $day,
+            'account' => $account
+        ));
+
+        while ( $data = $query->fetch()){
+            $day_array = $data;
+        }
+
+        return $day_array;
+    }
+
+    function refresh(){
+        $accounts = $this->getAllAccounts();
+
+        foreach ($accounts as $account){
+            $this->refreshDay($account['id']);
+        }
+
+        $this->refreshDay(0);
+        $this->refreshTransaction();
+    }
+
+    function refreshDay($account){
+
+        if ($account != 0) {
+            $query = $this->getPdo()->prepare('SELECT day, ROUND(SUM(amount), 2) AS dayTotal FROM Transaction WHERE account_id = :account_id GROUP BY day');
+
+            $query->execute(array(
+                'account_id' => $account
+            ));
+        } else {
+            $query = $this->getPdo()->query('SELECT day, ROUND(SUM(amount),2) AS dayTotal FROM Transaction GROUP BY day');
+        }
+
+        while ( $data = $query->fetch()){
+            $dayofweek = date('l', strtotime($data['day']));
+
+            $checkDay = $this->getPdo()->prepare("SELECT day FROM Day WHERE day = :day AND account_id = :account");
+
+            $checkDay->execute(array(
+               'day' => $data['day'],
+                'account' => $account
+            ));
+
+            $dbDay = $checkDay->fetch();
+
+            if($dbDay){
+                $updateDay = $this->getPdo()->prepare("UPDATE Day SET dayTotal = :dayTotal WHERE day = :day AND account_id = :account");
+
+                $updateDay->execute(array(
+                    'day' => $data['day'],
+                    'account' => $account,
+                    'dayTotal' => $data['dayTotal']
+                ));
+            }else {
+                $insertDay = $this->getPdo()->prepare("INSERT into Day (day, dayTotal,day_week, account_id) VALUES (:day, :total, :day_week, :account_id)");
+
+                $insertDay->execute(array(
+                    'day' => $data['day'],
+                    'total' => $data['dayTotal'],
+                    'day_week' => $dayofweek,
+                    'account_id' => $account
+                ));
+            }
+
+        }
+    }
+
+    function refreshTransaction(){
+        $query = $this->getPdo()->query('SELECT * FROM Day');
+
+        while ( $data = $query->fetch()){
+
+            $updateTransaction = $this->getPdo()->prepare("UPDATE Transaction SET day_id = :day_id WHERE day = :day AND account_id = :account");
+
+            $updateTransaction->execute(array(
+                'day_id'    => $data['id'],
+                'day'       => $data['day'],
+                'account'   => $data['account_id']
+            ));
+
+        }
+    }
 
     // ==============
     // ACCOUNTS
@@ -192,13 +289,26 @@ class render extends BDD{
 
     function getTransactions($account, $startDate, $endDate){
 
-        $transactions = $this->getPdo()->prepare("SELECT * FROM Transaction WHERE FIND_IN_SET(account_id, :account) AND day BETWEEN :start AND :endd ORDER BY day DESC");
+        if ($account == '0' OR $account == 0) {
 
-        $transactions->execute(array(
-            'account' 	=> $account,
-            'start'    	=> $startDate,
-            'endd'    	=> $endDate
-        ));
+            $transactions = $this->getPdo()->prepare("SELECT * FROM Transaction WHERE day BETWEEN :start AND :endd ORDER BY day DESC");
+
+            $transactions->execute(array(
+                'start'    	=> $startDate,
+                'endd'    	=> $endDate
+            ));
+
+        } else {
+
+            $transactions = $this->getPdo()->prepare("SELECT * FROM Transaction WHERE FIND_IN_SET(account_id, :account) AND day BETWEEN :start AND :endd ORDER BY day DESC");
+
+            $transactions->execute(array(
+                'account' 	=> $account,
+                'start'    	=> $startDate,
+                'endd'    	=> $endDate
+            ));
+
+        }
 
         if( $transactions != null){
 
@@ -428,6 +538,8 @@ class render extends BDD{
     }
 
     function getMonthSpending ($account, $month, $year) {
+        $account = ($account == 0) ? '1,2,3,4' : $account;
+
         $query = $this->getPdo()->prepare("SELECT amount FROM Transaction WHERE amount LIKE '%-%' AND FIND_IN_SET(account_id, :account) AND day BETWEEN :start AND :end ");
 
         $query->execute(array(
@@ -446,12 +558,14 @@ class render extends BDD{
     }
 
     function getMonthIncome ($account, $month, $year) {
+        $account = ($account == 0) ? '1,2,3,4' : $account;
+
         $query = $this->getPdo()->prepare("SELECT amount FROM Transaction WHERE amount NOT LIKE '%-%' AND FIND_IN_SET(account_id, :account) AND day BETWEEN :start AND :endDate ");
 
         $query->execute(array(
             'account' 	=> $account,
             'start'    	=> $year . '-' . $month . '-01',
-            'endDate'    	=> $year . '-' . $month . '-31'
+            'endDate'   => $year . '-' . $month . '-31'
         ));
 
         while ( $data = $query->fetch()){
