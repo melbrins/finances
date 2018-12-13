@@ -1,0 +1,33 @@
+.categories{
+
+  .category{
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    padding: 10px;
+    background-color: rgba(85, 85, 85, 0.5);
+    margin-bottom: 1px;
+
+    .category-details,
+    .category-amounts{
+      text-align: left;
+
+      h3{
+        font-size: 18px;
+        line-height: 24px;
+        margin-bottom: 5px;
+        color: #fff;
+      }
+
+      p{
+        font-size: 12px;
+        line-height: 14px;
+        color: #fff;
+      }
+    }
+
+    .category-amounts{
+      text-align: right;
+    }
+  }
+}
