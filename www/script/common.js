@@ -1,6 +1,6 @@
 var Chart   = require('chart.js'),
     $       = require('jquery'),
-    drp     = require('daterangepicker');
+    drp     = require('daterangepicker'),
     Odometer = require('odometer');
 
 // import 'Components/chart_IncomeVsSpending/js/IncomceVsSpending.js';

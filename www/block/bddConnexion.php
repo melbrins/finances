@@ -25,7 +25,7 @@
 
 class render extends BDD{
     // ==============
-    // ACCOUNTS
+    // DAY
     // ==============
     function getDate($date){
         return date('d F Y', strtotime($date));
@@ -78,8 +78,8 @@ class render extends BDD{
             $checkDay = $this->getPdo()->prepare("SELECT day FROM Day WHERE day = :day AND account_id = :account");
 
             $checkDay->execute(array(
-               'day' => $data['day'],
-                'account' => $account
+                'day'       => $data['day'],
+                'account'   => $account
             ));
 
             $dbDay = $checkDay->fetch();
@@ -436,10 +436,6 @@ class render extends BDD{
 
         return $query;
     }
-
-
-
-
 
 
     function yearSpendingPerMonth ($account, $year){
