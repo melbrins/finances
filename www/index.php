@@ -26,7 +26,7 @@
 
         $currentDay     = date('d');
 
-        $reponse  	= $render->getTransactions($account, '2018-'.$previousMonth.'-01', '2018-'.$previousMonth.'-31');
+        $reponse  	    = $render->getTransactions($account, '2018-'.$previousMonth.'-01', '2018-'.$previousMonth.'-31');
 
 		$months     = array( "9", "10", "11", "12");
 		$maxSpent   = $render->getMonthSpendingRange($account, $months, $previousYear);
@@ -50,6 +50,13 @@
         $nbrTransactionLastMonth = array_sum($render->nbrTransaction($account, $currentYear . '-' . $previousMonth . '-01', $currentYear . '-' . $previousMonth . '-' . $currentDay));
 
         $lastTransaction = $render->lastTransaction($account);
+
+//        $render->populateTransactionDate();
+//        $render->refresh();
+//        $transactionPeriod = $render->getTransactionPeriod('1', '2017-04-01','2018-03-31');
+        $updateTaxYear = $render->updateTaxYear();
+
+        $revenuePerYear = $render->getYearRevenue();
     ?>
     <script>
         YoY = <?php print(json_encode($YoY)); ?>;
@@ -61,7 +68,63 @@
         <h4>Dashboard</h4>
         <h1>Finance Overview</h1>
 
+<!--        --><?php
+//            $reponseJson 	= $render->getJsonTransactions($account, '2018-'.$previousMonth.'-01', '2018-'.$previousMonth.'-31');
+//            var_dump($reponseJson);
+//        ?>
+
         <div id="root"></div>
+        <script type="text/javascript">
+            window.transactions = <?= json_encode($reponseJson); ?>;
+        </script>
+
+        <section>
+            <table width="100%">
+                <thead>
+                <tr>
+                    <th width="20%" style="text-align:left;">
+                        Year
+                    </th>
+
+                    <th width="10%" style="text-align:left;">
+                        Account
+                    </th>
+
+                    <th width="70%" style="text-align:right;">
+                        Revenue
+                    </th>
+                </tr>
+                </thead>
+                <tbody>
+
+
+                <?php
+                    foreach( $revenuePerYear as $account ) {
+                ?>
+                        <tr>
+                            <td colspan="3" style="padding: 10px 0;"></td>
+                        </tr>
+                <?php
+                        foreach( $account as $year ) {
+                            ?>
+
+                            <tr>
+                                <td width="20%" style="text-align:left;"><?= $year['year']; ?></td>
+                                <td width="10%" style="text-align:left;"><?= $year['account']; ?></td>
+                                <td width="70%" style="text-align:right;"><?= $year['total']; ?></td>
+                            </tr>
+
+                            <?php
+                        }
+                        ?>
+
+                <?php
+                    }
+                ?>
+                </tbody>
+            </table>
+
+        </section>
 
         <div class="overview grid-4">
             <section>

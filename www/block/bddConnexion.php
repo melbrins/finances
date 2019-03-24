@@ -122,6 +122,47 @@ class render extends BDD{
         }
     }
 
+
+    // ==============
+    // Get value for Year and Month from day
+    // ==============
+    function populateTransactionDate(){
+        $query = $this->getPdo()->query('SELECT * FROM Transaction');
+
+        while ( $transaction = $query->fetch()){
+            $date = explode("-",$transaction['day']);
+
+            $updateTransaction = $this->getPdo()->prepare("UPDATE Transaction SET year = :year, month = :month WHERE id = :id");
+
+            $updateTransaction->execute(array(
+                'id' => $transaction['id'],
+                'month' => $date[1],
+                'year' => $date[0]
+            ));
+
+        }
+    }
+
+    function populateTaxYear(){
+
+    }
+
+    function getYearRevenue(){
+        $query = $this->getPdo()->query("SELECT year, account_id, ROUND(SUM(amount),2) AS yearTotal FROM Transaction GROUP BY year, account_id");
+        $revenuPerYear = array();
+
+        while ( $year = $query->fetch()){
+            $revenuPerYear[$year['account_id']][] = array(
+                'year' => $year['year'],
+                'account' => $year['account_id'],
+                'total' => $year['yearTotal']
+            );
+        }
+
+        return $revenuPerYear;
+
+    }
+
     // ==============
     // ACCOUNTS
     // ==============
@@ -146,6 +187,12 @@ class render extends BDD{
         return $accountName[0];
     }
 
+    function getAccountType($accountId){
+        $query = $this->getPdo()->query("SELECT type FROM Account WHERE id = '$accountId' ");
+        $accountType = $query->fetch();
+        return $accountType[0];
+    }
+
     // ==============
     // CATEGORIES
     // ==============
@@ -163,6 +210,48 @@ class render extends BDD{
 
         return $categories_Array;
     }
+
+    function getCategoryByType($type){
+        $query = $this->getPdo()->prepare("SELECT * FROM Category WHERE type = :type");
+
+        $query->execute(array(
+            'type' => $type
+        ));
+
+        while( $category = $query->fetch()){
+            $categories_Array[] = $category;
+        }
+
+        $query->closeCursor();
+
+        return $categories_Array;
+    }
+
+    function getCategoryByName($name){
+
+        $category = $this->getPdo()->prepare("SELECT id FROM Category WHERE name LIKE :name");
+
+        $category->execute(array(
+            'name' => $name
+        ));
+
+        return $category->fetch();
+    }
+
+    function getCategoryExpenses(){
+
+        $query = $this->getPdo()->query( "SELECT id, name FROM Category WHERE subcategory = 'Expenses' ");
+
+        while ($category = $query->fetch()){
+            $categories[] = $category;
+        }
+
+        return $categories;
+    }
+
+//    function getCategoryTotal(){
+//        SELECT category_id, ROUND(SUM(amount),2) AS categoryTotal FROM Transaction WHERE day BETWEEN '2017-04-01' AND '2018-03-31' GROUP BY category_id
+//    }
 
     function getCategoryName($categoryId){
         $query = $this->getPdo()->query("SELECT name FROM Category WHERE id = '$categoryId' ");
@@ -241,6 +330,279 @@ class render extends BDD{
     }
 
     // ==============
+    // TAX YEAR
+    // ==============
+
+    function getAllTaxYear(){
+
+        $tax_year_all = $this->getPdo()->query("SELECT id FROM Tax_Year");
+
+        while($tax_year = $tax_year_all->fetch()){
+            $tax_year_ids[] = $tax_year['id'];
+        };
+
+        return $tax_year_ids;
+
+    }
+
+    function getTaxYear($id){
+
+        $tax_year = $this->getPdo()->query("SELECT * FROM Tax_Year WHERE id = $id");
+
+        return $tax_year->fetch();
+    }
+
+    function updateTaxYear(){
+        // get all tax year id
+        $tax_year_all = $this->getAllTaxYear();
+
+        foreach($tax_year_all as $tax_year_id){
+
+            $tax_year = $this->getTaxYear($tax_year_id);
+
+            $tax_year_name = explode("-", $tax_year['name']);
+            $tax_year_start = $tax_year_name[0] . '-04-01';
+            $tax_year_end = $tax_year_name[1] . '-03-31';
+
+
+            $tax_year_dividend = $this->getDividend($tax_year_start, $tax_year_end);
+            $tax_year_expenses = $this->getExpenses($tax_year_start, $tax_year_end);
+            $tax_year_salary   = $this->getPersonalSalary($tax_year_start, $tax_year_end);
+            $tax_year_income   = $this->getIncome($tax_year_start, $tax_year_end);
+            $tax_year_paid_tax = $this->getCorporateTaxes($tax_year_start, $tax_year_end);
+            $tax_year_self_assessment = $this->getSelfAssessment($tax_year_start, $tax_year_end);
+            $tax_year_personal_revenue = $this->getPersonalYearRevenue($tax_year_id);
+            $tax_year_business_revenue = $this->getBusinessYearRevenue($tax_year_id);
+
+            $watchCategory = array(
+                'id' => $tax_year_id,
+                'Dividend' => $tax_year_dividend,
+                'Expenses' => $tax_year_expenses,
+                'Salary'   => $tax_year_salary['total'],
+                'Income'   => $tax_year_income['total'],
+                'Taxes'    => $tax_year_paid_tax,
+                'self-assessment'    => $tax_year_self_assessment
+            );
+
+            $update = $this->getPdo()->prepare("UPDATE Tax_Year SET dividend_total = :dividend, salary_total = :salary, expenses_total = :expenses, income_total = :income, corporate_tax_total = :taxes, self_assessment_total = :sa, personal_revenue = :personal, business_revenue = :business WHERE id = :id");
+
+            $update->execute(array(
+                'dividend'  => $tax_year_dividend,
+                'expenses'  => $tax_year_expenses['total'],
+                'salary'    => $tax_year_salary['total'],
+                'income'    => $tax_year_income['total'],
+                'taxes'     => $tax_year_paid_tax,
+                'sa'        => $tax_year_self_assessment,
+                'id'        => $tax_year_id,
+                'personal'  => $tax_year_personal_revenue,
+                'business'  => $tax_year_business_revenue
+            ));
+
+            $updateTransactions = $this->getPdo()->prepare("UPDATE Transaction SET tax_year_id = :year WHERE day BETWEEN :start AND :end");
+
+            $updateTransactions->execute(array(
+                'year' => $tax_year_id,
+                'start' => $tax_year_start,
+                'end' => $tax_year_end
+            ));
+        }
+
+        return $watchCategory;
+    }
+
+    function getCorporateTaxes($start, $end){
+
+        $corporate_Taxes_id = $this->getCategoryByName('Corporate Taxes');
+
+        $query = $this->getPdo()->prepare("SELECT ROUND(SUM(amount),2) AS total FROM Transaction WHERE category_id = :category AND day BETWEEN :start AND :end");
+
+        $query->execute(array(
+            'category' => $corporate_Taxes_id[0],
+            'start' => $start,
+            'end' => $end
+        ));
+
+        while($corporate_Taxes = $query->fetch()){
+            $taxes_total = ( $corporate_Taxes['total']) ? $corporate_Taxes['total'] : '0';
+        }
+
+        return $taxes_total;
+    }
+
+    function getSelfAssessment($start, $end){
+
+        $taxes_id = $this->getCategoryByName('Taxes');
+
+        $query = $this->getPdo()->prepare("SELECT ROUND(SUM(amount),2) AS total FROM Transaction WHERE category_id = :category AND day BETWEEN :start AND :end");
+
+        $query->execute(array(
+            'category' => $taxes_id[0],
+            'start' => $start,
+            'end' => $end
+        ));
+
+        while($taxes = $query->fetch()){
+            $taxes_total = ( $taxes['total']) ? $taxes['total'] : '0';
+        }
+
+        return $taxes_total;
+    }
+
+    function getDividend($start, $end){
+
+        $dividend_id = $this->getCategoryByName('Dividend');
+
+        $query = $this->getPdo()->prepare("SELECT ROUND(SUM(amount),2) AS total FROM Transaction WHERE category_id = :category AND day BETWEEN :start AND :end");
+
+        $query->execute(array(
+            'category' => $dividend_id[0],
+            'start' => $start,
+            'end' => $end
+        ));
+
+        while($dividend = $query->fetch()){
+            $dividend_total = ( $dividend['total']) ? $dividend['total'] : '0';
+        }
+
+        return $dividend_total;
+    }
+
+    function getExpenses($start, $end){
+
+        $expenses_id = $this->getCategoryExpenses();
+        $expenses_total = '0';
+        $expenses_array = array();
+
+        foreach ( $expenses_id as $expense) {
+
+            $expenses = $this->getPdo()->prepare("SELECT name, ROUND(SUM(amount),2) AS total FROM Transaction WHERE category_id = :category AND day BETWEEN :start AND :end");
+
+            $expenses->execute(array(
+                'category' => $expense['id'],
+                'start' => $start,
+                'end' => $end
+            ));
+
+
+            while ($expense_sum = $expenses->fetch()) {
+                $expense_total = ($expense_sum['total'] !== NULL) ? $expense_sum['total'] : '0';
+
+                $expenses_array[] = array(
+                    'name' => $expense['name'],
+                    'total' => $expense_total
+                );
+
+            }
+
+        }
+
+        foreach($expenses_array as $data){
+            $expenses_total += $data['total'];
+        }
+
+        $expenses_array['total'] = $expenses_total;
+
+        return $expenses_array;
+    }
+
+    function getPersonalSalary($start, $end){
+
+        $personal_salary_id = $this->getCategoryByName('Personal Salary');
+
+        $query = $this->getPdo()->prepare("SELECT ROUND(SUM(amount),2) AS total FROM Transaction WHERE category_id = :category AND day BETWEEN :start AND :end");
+
+        $query->execute(array(
+            'category' => $personal_salary_id['id'],
+            'start' => $start,
+            'end' => $end
+        ));
+
+        while($personal_salary = $query->fetch()){
+            $personal_salary_total = ($personal_salary) ? $personal_salary : '0';
+        }
+
+        return $personal_salary_total;
+
+    }
+
+    function getIncome($start, $end){
+        $income_id = $this->getCategoryByName('Income');
+
+        $query = $this->getPdo()->prepare("SELECT ROUND(SUM(amount),2) AS total FROM Transaction WHERE category_id = :category AND day BETWEEN :start AND :end");
+
+        $query->execute(array(
+            'category' => $income_id['id'],
+            'start' => $start,
+            'end' => $end
+        ));
+
+        while($income = $query->fetch()){
+            $income_total = ($income) ? $income : '0';
+        }
+
+        return $income_total;
+    }
+
+    function getBusinessYearRevenue($id){
+
+        $query = $this->getPdo()->prepare ( "SELECT * FROM Tax_Year WHERE id = :id");
+
+        $query->execute(array(
+            'id' => $id
+        ));
+
+        while($tax_year = $query->fetch()){
+            $income   = $tax_year['income_total'];
+            $dividend = $tax_year['dividend_total'] * -1;
+            $expenses = $tax_year['expenses_total'] * -1;
+            $salary   = $tax_year['salary_total'];
+            $taxes    = $tax_year['corporate_tax_total'] * -1;
+
+            $revenue = $income - ($dividend + $expenses + $salary + $taxes);
+
+        }
+
+        return $revenue;
+    }
+
+    function getPersonalYearRevenue($id){
+
+        $taxes_id = $this->getCategoryByName('Taxes');
+
+        $query = $this->getPdo()->prepare("SELECT * FROM Tax_Year WHERE id = :id");
+
+        $query->execute(array(
+            'id' => $id
+        ));
+
+        while($tax_year = $query->fetch()){
+            $period     = explode("-", $tax_year['name']);
+            $start      = $period[0] . '-04-01';
+            $end        = $period[1] . '-03-31';
+            $dividend   = $tax_year['dividend_total'] * -1;
+            $salary     = $tax_year['salary_total'];
+            $taxes      = $tax_year['self_assessment_total'] * -1;
+        }
+
+        $spending = $this->getPdo()->prepare("SELECT ROUND(SUM(amount),2) AS total FROM Transaction WHERE category_id != :taxes AND amount LIKE '-%' AND account_id = :account AND day BETWEEN :start AND :end");
+
+        $spending->execute(array(
+            'taxes' => $taxes_id['id'],
+            'account' => 1,
+            'start' => $start,
+            'end'   => $end
+        ));
+
+        while($spent = $spending->fetch()){
+            $sp = ($spent) ? $spent['total'] * -1 : '0';
+        }
+
+        $revenue = $dividend + $salary - $taxes - $sp;
+
+        return $revenue;
+    }
+
+    // ==============
     // TRANSACTIONS
     // ==============
     function getAllTransactions() {
@@ -287,9 +649,59 @@ class render extends BDD{
         }
     }
 
+    function getJsonTransactions($account, $startDate, $endDate){
+        $collection = array();
+
+        $transactions = $this->getTransactions($account, $startDate, $endDate);
+
+        while ($transaction  = $transactions->fetch()){
+            $day = explode('-', $transaction['day']);
+            $year = $day[0];
+            $month = $day[1];
+            $day = $day[2];
+
+//            $collection[] = array([
+//               'year' : $year,
+//               'month' : [
+//                    {
+//                        'name' : $month,
+//                        'day': [
+//                        {
+//                            'name' : $day,
+//                            'transaction' : [
+//                            {
+//                                'id' : $transaction['id'],
+//                                'name' : $transaction['name'],
+//                                'amount' : $transaction['amount'],
+//                                'category' : $transaction['category_id'],
+//                                'account' : $transaction['account_id'],
+//                                'merchant' : $transaction['merchant']
+//                            }
+//                        ]
+//                        }
+//                    ]
+//                    }
+//                ]
+//            ]);
+
+            $collection[] = array(
+                'day' => $transaction['day'],
+                'id' => $transaction['id'],
+                'name' => $transaction['name'],
+                'amount' => $transaction['amount'],
+                'category' => $transaction['category_id'],
+                'account' => $transaction['account_id'],
+                'merchant' => $transaction['merchant']
+            );
+        }
+
+        return $collection;
+
+    }
+
     function getTransactions($account, $startDate, $endDate){
 
-        if ($account == '0' OR $account == 0) {
+        if ($account != '0' OR $account != 0) {
 
             $transactions = $this->getPdo()->prepare("SELECT * FROM Transaction WHERE day BETWEEN :start AND :endd ORDER BY day DESC");
 
@@ -299,6 +711,9 @@ class render extends BDD{
             ));
 
         } else {
+
+            // TODO replace with list of accounts ID
+            $account = '1,2,3,4';
 
             $transactions = $this->getPdo()->prepare("SELECT * FROM Transaction WHERE FIND_IN_SET(account_id, :account) AND day BETWEEN :start AND :endd ORDER BY day DESC");
 

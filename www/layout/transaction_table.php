@@ -60,14 +60,15 @@
 
                             <div class="transaction-name">
                                 <p><?php echo $donnees['name']; ?></p>
-                                <span class="category">category: <?php echo $donnees['category_id']; ?></span>
-                                <span class="account">account: <?php echo $donnees['account_id']; ?></span>
+                                <span class="category">category: <?= $render->getCategoryName($donnees['category_id']); ?></span>
+                                <span class="account">account: <?= $render->getAccountName($donnees['account_id']); ?> (<?= $donnees['account_id'];?>)</span>
                             </div>
 
                             <div class="transaction-amount">
                                 <p class="amount"><?php echo $donnees['amount']; ?></p>
                             </div>
                         </a>
+
                     </li>
 
                     <?php

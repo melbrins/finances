@@ -137,12 +137,24 @@ module.exports = function(grunt){
                 module: {
                     rules: [
                         {
-                            test: /\.js$/,
+                            test: /\.html$/,
+                            loader: 'file-loader?name=[name].[ext]',
+                        },
+                        {
+                            test: /\.jsx?$/,
                             exclude: /node_modules/,
-                            loader: "babel-loader",
+                            loader: 'babel-loader',
                             query: {
                                 presets: ['es2015', 'react']
                             }
+                        },
+                        {
+                            test: /\.scss$/,
+                            use: [
+                                "style-loader", // creates style nodes from JS strings
+                                "css-loader", // translates CSS into CommonJS
+                                "sass-loader" // compiles Sass to CSS, using Node Sass by default
+                            ]
                         }
 
                     ]

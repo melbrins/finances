@@ -10,11 +10,10 @@
         $render  	= new render();
 
         $transactionId          = $_GET['id'];
-        $categories             = $render->getAllCategories();
         $transaction            = $render->getTransactionPerId($transactionId);
         $transactionName_array  = explode( ' ON ', $transaction['name']);
         $transactionName        = $transactionName_array[0];
-        $nbrTransactions        = $render->nbrTransactionTrigger('1', '2017-01-01', '2018-09-31', $transactionName);
+        $nbrTransactions        = $render->nbrTransactionTrigger('1', '2017-01-01', '2019-09-31', $transactionName);
         $reponse                = $render->getAllSimilarTransactions('1', $transactionName);
 
     ?>
@@ -44,6 +43,10 @@
 
             <select class="categories" name="category">
                 <?php
+                    $type       = $render->getAccountType($transaction['account_id']);
+                    var_dump($type);
+                    $categories = $render->getCategoryByType($type);
+
                     foreach($categories as $category){
                 ?>
                         <option value="<?php echo $category['id']; ?>" <?php if($category['id'] == $transaction['category_id']){ ?> selected <?php } ?> ><?php echo $category['name']; ?></option>

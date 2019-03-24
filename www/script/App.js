@@ -1,10 +1,15 @@
 import React, { Component } from 'react';
+import Transactions from './Components/Transactions/Transactions';
 
 class App extends Component {
     render() {
 
         return (
-            <h1>test</h1>
+            <section>
+                <h1>React Section</h1>
+
+                <Transactions/>
+            </section>
         );
 
     }
